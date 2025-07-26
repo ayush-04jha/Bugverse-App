@@ -1,0 +1,46 @@
+# ===================
+# Node.js (Backend)
+# ===================
+server/node_modules/
+server/.env
+server/dist/
+server/build/
+server/.DS_Store
+
+# ===================
+# React App (Frontend)
+# ===================
+frontend/node_modules/
+frontend/.env
+frontend/dist/
+frontend/build/
+frontend/.DS_Store
+
+# ===================
+# System & IDE
+# ===================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+
+# ===================
+# OS junk
+# ===================
+*.swp
+*.swo
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# ===================
+# Others
+# ===================
+*.local
+*.env.local
+*.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
