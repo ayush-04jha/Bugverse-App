@@ -2,21 +2,24 @@ import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET
+
 
 export const signUp = async (req,res)=>{
-   const {name,email,password} = req.body;
+   const {name,email,password,role} = req.body;
    try{
+    
     const userExist = await User.findOne({email});
-    if (userExist) res.status(400).json({msg:"User already exists"});
+    if (userExist) return res.status(400).json({msg:"User already exists"});
 
     const hashedPassword = await bcrypt.hash(password,10);
-    const user = await User.create({name,email,password:hashedPassword});
-    const token = jwt.sign({id:user._id},JWT_SECRET,{expiresIn:"7d"});
-
+    const user = await User.create({name,email,password:hashedPassword,role});
+    const token = jwt.sign({id:user._id,role:user.role},process.env.JWT_SECRET,{expiresIn:"7d"});
+     console.log("TOKEN GENERATED:", token);
+     console.log("SECRET USED:", process.env.JWT_SECRET);
     res.status(201).json({ user, token });
    }
    catch(err){
+    console.error("Signup Error:", err);
      res.status(500).json({ msg: "Server error" });
    }
 }
@@ -25,15 +28,16 @@ export const logIn = async (req,res)=>{
  const {email,password} = req.body;
  try{
    const user =await User.findOne({email})
-   if(!user) res.status(400).json({msg:"invalid cradentials"});
+   if(!user) return res.status(400).json({msg:"invalid cradentials"});
 
    const isMatch = await bcrypt.compare(password,user.password);
 
-   if(!isMatch) res.status(400).json({msg:"Wrong Password!"});
+   if(!isMatch) return res.status(400).json({msg:"Wrong Password!"});
 
-   const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "7d" });
-   res.status(200).json({ user, token });
+   const token = jwt.sign({ id: user._id,role:user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
+     res.status(200).json({ user, token });
  }catch(err){
+  console.error("Login Error:", err);
    res.status(500).json({ msg: "Server error" });
  }
 }
