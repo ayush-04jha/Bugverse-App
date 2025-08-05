@@ -25,7 +25,12 @@ console.log("JWT_SECRET from env:", process.env.JWT_SECRET);
   .catch(err=>console.log(err))
 
   // middleware use
-  app.use(cors());
+  app.use(cors(
+    {
+      origin: "http://localhost:5173",
+  credentials: true
+    }
+  ));
   app.use(express.json()); // json ko parse krke req.body me available krata hai
    // io ka instance provide krayga routes ko or controllers ko as req.io
   app.use((req,res,next)=>{
@@ -40,7 +45,7 @@ console.log("JWT_SECRET from env:", process.env.JWT_SECRET);
   io.on("connection", (socket) => {
     console.log("socket connected", socket.id);
     socket.on("disconnected", () => {
-      console.log("socket disconnected:", socket.id);
+      console.log("client disconnected:", socket.id);
     });
   });
 

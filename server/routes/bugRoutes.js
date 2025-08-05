@@ -11,12 +11,12 @@ router.get(
   authorizeRoles("admin"),
   getAllUsers
 );
-router.post('/',authorizeRoles("tester","admin"),authMiddleware,createBug);
+router.post("/",authMiddleware,authorizeRoles("tester","admin"),createBug);
 router.get("/", authMiddleware, getBugs);
 router.get(
   "/dev/bug-summary",
   authMiddleware,
-  authorizeRoles("dev"),
+  authorizeRoles("developer"),
   getBugSummaryForDev
 );
 // router.put('/:id/resolve',authMiddleware,authorizeRoles("dev","admin"),resolveBug);

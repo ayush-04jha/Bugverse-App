@@ -3,12 +3,13 @@ import mongoose from "mongoose";
 const bugSchema = new mongoose.Schema({
   title: String,
   description: String,
-  serverity: String,
+  severity: { type: String, enum: ['low', 'medium', 'high', 'critical'] },
   module:String,
+  tags:[String],
   status:{
     type : String,
     enum: ["open", "inprogress", "testing", "closed"],
-    default: "Open"
+    default: "open"
   },
   createdBy:{
     type:mongoose.Schema.Types.ObjectId,
@@ -18,7 +19,7 @@ const bugSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  comment:[
+  comments:[
     {
         text: String,
         user:{type:mongoose.Schema.Types.ObjectId, ref:"User"},
