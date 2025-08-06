@@ -3,14 +3,15 @@ import {createBug,getBugs} from "../controllers/bugController.js"
 import authMiddleware from "../middilware/authMiddleware.js";
 import authorizeRoles from "../middilware/roleMiddleware.js";
 import {getBugSummaryForDev } from "../controllers/bugController.js";
-import { getAllUsers } from "../controllers/userController.js";
+import { getUsersByRole } from "../controllers/userController.js";
 const router = express.Router();
 router.get(
   "/admin/users",
   authMiddleware,
   authorizeRoles("admin"),
-  getAllUsers
+  getUsersByRole
 );
+
 router.post("/",authMiddleware,authorizeRoles("tester","admin"),createBug);
 router.get("/", authMiddleware, getBugs);
 router.get(

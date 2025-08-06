@@ -88,13 +88,13 @@ const DeveloperDashboard = ({ onBugClick }) => {
       {/* Assigned Bugs */}
       <div className="space-y-6">
         {assignedBugs.map(bug => (
-          <BugCard key={bug.id} bug={bug} onClick={() => onBugClick(bug.id)}>
+          <BugCard key={bug._id} bug={bug} onClick={() => onBugClick(bug._id)}>
             <div className="flex items-center justify-between pt-4 border-t border-gray-100">
               <div className="flex space-x-2">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleStatusUpdate(bug.id, 'in-progress');
+                    handleStatusUpdate(bug._id, 'in-progress');
                   }}
                   className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full hover:bg-yellow-200 transition-colors"
                   disabled={bug.status === 'in-progress'}

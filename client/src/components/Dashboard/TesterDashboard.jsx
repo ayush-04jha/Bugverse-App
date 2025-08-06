@@ -7,10 +7,13 @@ import ReportBugForm from './ReportBugForm';
 
 const TesterDashboard = ({ onBugClick }) => {
   const { user } = useAuth();
-  const { bugs } = useBugs();
+  const { bugs,users } = useBugs();
   const [showReportForm, setShowReportForm] = useState(false);
+   
+   
 
-  const reportedBugs = bugs.filter(bug => bug.reportedBy === user.id);
+  const reportedBugs = bugs.filter(bug => bug.createdBy?._id === user._id);
+console.log("reported bugs hai TesterDashboard",reportedBugs);
 
   const stats = {
     total: reportedBugs.length,
@@ -84,9 +87,9 @@ const TesterDashboard = ({ onBugClick }) => {
         <div className="space-y-4">
           {reportedBugs.map(bug => (
             <BugCard 
-              key={bug.id} 
+              key={bug._id} 
               bug={bug} 
-              onClick={() => onBugClick(bug.id)}
+              onClick={() => onBugClick(bug._id)}
             />
           ))}
         </div>

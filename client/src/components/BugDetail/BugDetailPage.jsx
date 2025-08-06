@@ -4,6 +4,8 @@ import { useBugs } from '../../contexts/BugContext';
 import { ArrowLeft, Calendar, User, Tag, MessageCircle, Send, Edit3, Save, X } from 'lucide-react';
 import StatusBadge from '../Common/StatusBadge';
 import PriorityBadge from '../Common/PriorityBadge';
+import instance from '../../axios';
+import socket from '../../socket';
 
 const BugDetailPage = ({ bugId, onBack }) => {
   const { user } = useAuth();
@@ -64,14 +66,29 @@ const BugDetailPage = ({ bugId, onBack }) => {
     setEditData({});
   };
 
-  const handleAddComment = () => {
+  const handleAddComment = async () => {
     if (comment.trim()) {
-      addComment(bugId, {
-        userId: user.id,
-        userName: user.name,
-        content: comment
+
+      try {
+        const res = await instance.post(`/comments/bugs/${bugId}/comment`, {
+        text: comment,
       });
+        
+      const newComment  = res.data;
+
+      // emit to socket
+      socket.emit("newComment",newComment)
+
+
+     
+
       setComment('');
+
+      } catch (err) {
+          console.error('Failed to post comment:', err);
+      }
+      
+      
     }
   };
 
@@ -308,10 +325,10 @@ const BugDetailPage = ({ bugId, onBack }) => {
                   <div className="flex-1">
                     <div className="bg-gray-50 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-gray-900">{comment.userName}</h4>
+                        <h4 className="font-medium text-gray-900">{comment.user?.name}</h4>
                         <span className="text-sm text-gray-500">{formatDate(comment.createdAt)}</span>
                       </div>
-                      <p className="text-gray-700 whitespace-pre-wrap">{comment.content}</p>
+                      <p className="text-gray-700 whitespace-pre-wrap">{comment.text}</p>
                     </div>
                   </div>
                 </div>

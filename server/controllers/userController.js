@@ -1,10 +1,27 @@
 import User from "../models/userModel.js";
-export const getAllUsers = async(req,res)=>{
-    try{
-      const users = await User.find().select("-password");
-      res.status(200).json(users);
-    } catch(e){
-       res.status(500).json({ message: "Failed to fetch users", error });
-    }
-    
+export const getUsersByRole = async(req,res)=>{
+  try{
+    const currentUserRole = req.user.role;
+      let query = {};
+  
+
+    if(currentUserRole==="tester"){
+      // Tester can see both testers and developers
+      query = {role:{$in:["developer","tester"]}}
+    } 
+    else if (currentUserRole === "developer"){
+      // Developer can only see testers
+     query = { role: "tester" };
+    } 
+    // Admin sees everyone (query remains {})
+      const users = await User.find(query).select("name email role");
+      console.log(users);
+      
+      res.json(users);
+
+
+  }catch(err){
+    console.error("Error fetching users by role", err);
+    res.status(500).json({ message: "Server error" });
+  }
 }

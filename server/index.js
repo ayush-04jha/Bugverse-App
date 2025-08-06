@@ -1,6 +1,5 @@
   import dotenv from "dotenv";
   dotenv.config();
-console.log("JWT_SECRET from env:", process.env.JWT_SECRET);
   import express from "express";
   import http from "http";
   import { Server } from "socket.io";
@@ -9,7 +8,7 @@ console.log("JWT_SECRET from env:", process.env.JWT_SECRET);
   import bugRoutes from './routes/bugRoutes.js';
   import authRoutes from "./routes/authRoutes.js";
   import userRoutes from "./routes/userRouters.js"
-   
+  import commentRoutes from "./routes/commentRoutes.js"
   const app = express();
   const server = http.createServer(app);
   const io = new Server(server,{
@@ -40,8 +39,8 @@ console.log("JWT_SECRET from env:", process.env.JWT_SECRET);
 
   app.use("/api/bugs",bugRoutes)
   app.use("/api/auth", authRoutes);
-  app.use("/api", userRoutes);
-
+  app.use("/api/users", userRoutes);
+  app.use("/api/comments",commentRoutes);
   io.on("connection", (socket) => {
     console.log("socket connected", socket.id);
     socket.on("disconnected", () => {

@@ -1,4 +1,5 @@
 import { Bug } from "../models/bug.js";
+import mongoose from "mongoose";
 
 
 export const createBug = async (req, res) => {
@@ -73,7 +74,7 @@ export const getBugSummaryForDev = async (req, res) => {
 
     const summary = await Bug.aggregate([
       {
-        $match: { assignedTo: "devId" },
+        $match: { assignedTo: new mongoose.Types.ObjectId(devId) },
       },
       {
         $group: {
@@ -103,3 +104,29 @@ summary.forEach(
     res.status(500).json({ message: "Error fetching bug summary", error });
   }
 };
+
+export const addComment  = async(req,res)=>{
+  try {
+    const {bugId} = req.params;
+    const {text} = req.body;
+    const bug = await Bug.findById(bugId);
+    if (!bug) return res.status(404).json({ message: "Bug not found" });
+
+    const comment = {
+      text,
+      user:req.user._id
+    }
+
+    bug.comments.push(comment);
+    await bug.save();
+
+    const populatedBug = await bug.populate("comments.user", "name role");
+
+    req.io.emit("newComment",{bugId,comment: populatedBug.comments.at(-1)})
+
+     res.status(200).json({ message: "Comment added", comment: populatedBug.comments.at(-1) });
+  } catch (err) {
+    console.error("Comment Error", err);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+}

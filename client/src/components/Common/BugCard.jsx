@@ -6,7 +6,7 @@ const BugCard = ({ bug, onClick, showActions, children }) => {
   const { getUserById } = useBugs();
   
   const assignedUser = bug.assignedTo ? getUserById(bug.assignedTo) : null;
-  const reportedUser = getUserById(bug.reportedBy);
+  const reportedUser = getUserById(bug.createdBy?._id);
 
   const getPriorityColor = (priority) => {
     switch (priority) {

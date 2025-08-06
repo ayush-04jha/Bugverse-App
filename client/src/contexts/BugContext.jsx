@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { useEffect } from 'react';
-import { mockBugs, mockUsers } from '../data/mockData.js';
+
 import { io } from "socket.io-client";
 import instance from '../axios.js';
 const socket = io("http://localhost:5000");
@@ -15,20 +15,47 @@ export const useBugs = () => {
 };
 
 export const BugProvider = ({ children }) => {
-  const [bugs, setBugs] = useState(mockBugs);
-  const [users, setUsers] = useState(mockUsers);
+  const [bugs, setBugs] = useState([]);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+  socket.on("newComment", ({bugId,comment}) => {
+    console.log("socket wala comment:",comment);
+    
+  setBugs(prev => prev.map(bug => 
+    bug._id === bugId
+      ? {
+          ...bug,
+          comments: bug.comments.some(c => c._id === comment._id)
+            ? bug.comments  // already added, skip
+            : [...bug.comments, comment]
+        }
+      : bug
+  ));
+});
+
+  return () => {
+    socket.off("newComment");
+  };
+}, []);
+
 
    useEffect(() => {
-    const fetchBugs = async () => {
+    const fetchData = async () => {
       try {
-        const res = await instance.get("/bugs"); // Axios already has baseURL and token
-        setBugs(res.data);
+        const [bugsRes,usersRes] = await Promise.all([instance.get("/bugs"),instance.get("/users")]) ; // Axios already has baseURL and token
+        setBugs(bugsRes.data);
+        setUsers(usersRes.data);
+        console.log("log kiye hai bugs",bugsRes.data);
+        
+        console.log("log kiye hai users",usersRes.data);
       } catch (err) {
         console.error("Failed to fetch bugs:", err);
       }
     };
 
-    fetchBugs();
+    fetchData();
+
   }, []);
 
 useEffect(() => {
@@ -43,7 +70,7 @@ useEffect(() => {
   
   const createBug = (bugData) => {
     const newBug = {
-      id: Date.now().toString(),
+      _id: Date.now().toString(),
       ...bugData,
       status: 'open',
       createdAt: new Date().toISOString(),
@@ -56,36 +83,41 @@ useEffect(() => {
 
   const updateBug = (bugId, updates) => {
     setBugs(prev => prev.map(bug => 
-      bug.id === bugId 
+      bug._id === bugId 
         ? { ...bug, ...updates, updatedAt: new Date().toISOString() }
         : bug
     ));
   };
 
   const addComment = (bugId, comment) => {
-    setBugs(prev => prev.map(bug => 
-      bug.id === bugId 
-        ? { 
-            ...bug, 
-            comments: [...bug.comments, { 
-              id: Date.now().toString(), 
-              ...comment, 
-              createdAt: new Date().toISOString() 
-            }],
-            updatedAt: new Date().toISOString()
-          }
-        : bug
+    setBugs(prev => prev.map(bug => {
+       if(bug._id!==bugId) return bug;
+
+       // check if commen already exist
+
+       const alreadyExists =  bug.comments.some(c => c._id === comment._id);
+        if (alreadyExists) return bug;
+        return {
+        ...bug,
+        comments: [...bug.comments, comment],
+        updatedAt: new Date().toISOString(),
+      };
+
+    }
+      
+        
     ));
   };
 
   const updateUserRole = (userId, newRole) => {
     setUsers(prev => prev.map(user => 
-      user.id === userId ? { ...user, role: newRole } : user
+      user._id === userId ? { ...user, role: newRole } : user
     ));
   };
-
-  const getBugById = (id) => bugs.find(bug => bug.id === id);
-  const getUserById = (id) => users.find(user => user.id === id);
+     
+   
+  const getBugById = (id) => bugs.find(bug => bug._id === id);
+  const getUserById = (id) => users.find(user => user._id === id);
 
   return (
     <BugContext.Provider value={{

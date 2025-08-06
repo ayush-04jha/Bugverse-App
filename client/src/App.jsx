@@ -14,10 +14,13 @@ function App() {
   const [selectedBugId, setSelectedBugId] = useState(null);
 
   const handleBugClick = (bugId) => {
+    console.log("bugId:",bugId);
+    
     setSelectedBugId(bugId);
     setCurrentView('bug-detail');
   };
-
+     
+     
   const handleBackToDashboard = () => {
     setCurrentView('dashboard');
     setSelectedBugId(null);
@@ -26,7 +29,6 @@ function App() {
   if (!user) {
     return <AuthPage />;
   }
-
   const renderDashboard = () => {
     switch (user.role) {
       case 'admin':
