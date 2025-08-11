@@ -8,7 +8,7 @@ const bugSchema = new mongoose.Schema({
   tags:[String],
   status:{
     type : String,
-    enum: ["open", "inprogress", "testing", "closed"],
+    enum: ["open", "in progress", "testing", "resolved"],
     default: "open"
   },
   createdBy:{

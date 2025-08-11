@@ -44,7 +44,7 @@ const BugDetailPage = ({ bugId, onBack }) => {
     setEditData({
       title: bug.title,
       description: bug.description,
-      priority: bug.priority,
+      severity: bug.severity,
       status: bug.status,
       assignedTo: bug.assignedTo || '',
       tags: bug.tags ? bug.tags.join(', ') : ''
@@ -57,6 +57,8 @@ const BugDetailPage = ({ bugId, onBack }) => {
       ...editData,
       tags: editData.tags ? editData.tags.split(',').map(tag => tag.trim()) : []
     };
+  
+    
     updateBug(bugId, updates);
     setIsEditing(false);
   };
@@ -157,8 +159,8 @@ const BugDetailPage = ({ bugId, onBack }) => {
               />
               <div className="flex space-x-4">
                 <select
-                  value={editData.priority}
-                  onChange={(e) => setEditData({ ...editData, priority: e.target.value })}
+                  value={editData.severity}
+                  onChange={(e) => setEditData({ ...editData, severity: e.target.value })}
                   className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="low">Low</option>
@@ -193,7 +195,7 @@ const BugDetailPage = ({ bugId, onBack }) => {
             <>
               <h1 className="text-2xl font-bold text-gray-900 mb-4">{bug.title}</h1>
               <div className="flex items-center space-x-3">
-                <PriorityBadge priority={bug.priority} size="lg" />
+                <PriorityBadge priority={bug.severity} size="lg" />
                 <StatusBadge status={bug.status} size="lg" />
               </div>
             </>

@@ -11,12 +11,15 @@ const AdminDashboard = ({ onBugClick }) => {
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [assignedFilter, setAssignedFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-
+       console.log("filtere hoke ko taiyar bugs:",bugs);
+       
   const filteredBugs = bugs.filter(bug => {
-    const matchesSearch = bug.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         bug.description.toLowerCase().includes(searchTerm.toLowerCase());
+    console.log("filtered bugs",bug);
+    
+    const matchesSearch = bug.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         bug.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || bug.status === statusFilter;
-    const matchesPriority = priorityFilter === 'all' || bug.priority === priorityFilter;
+    const matchesPriority = priorityFilter === 'all' || bug.severity === priorityFilter;
     const matchesAssigned = assignedFilter === 'all' || bug.assignedTo === assignedFilter;
     
     return matchesSearch && matchesStatus && matchesPriority && matchesAssigned;
@@ -25,7 +28,7 @@ const AdminDashboard = ({ onBugClick }) => {
   const stats = {
     totalBugs: bugs.length,
     openBugs: bugs.filter(bug => bug.status === 'open').length,
-    criticalBugs: bugs.filter(bug => bug.priority === 'critical').length,
+    criticalBugs: bugs.filter(bug => bug.severity === 'critical').length,
     resolvedBugs: bugs.filter(bug => bug.status === 'resolved').length,
     totalUsers: users.length,
     developers: users.filter(user => user.role === 'developer').length,
@@ -169,9 +172,9 @@ const AdminDashboard = ({ onBugClick }) => {
           <div className="space-y-4">
             {filteredBugs.map(bug => (
               <BugCard 
-                key={bug.id} 
+                key={bug._id} 
                 bug={bug} 
-                onClick={() => onBugClick(bug.id)}
+                onClick={() => onBugClick(bug._id)}
               />
             ))}
           </div>

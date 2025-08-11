@@ -1,5 +1,5 @@
 import express from "express"
-import {createBug,getBugs} from "../controllers/bugController.js"
+import {createBug,getBugs,updateBug} from "../controllers/bugController.js"
 import authMiddleware from "../middilware/authMiddleware.js";
 import authorizeRoles from "../middilware/roleMiddleware.js";
 import {getBugSummaryForDev } from "../controllers/bugController.js";
@@ -11,7 +11,7 @@ router.get(
   authorizeRoles("admin"),
   getUsersByRole
 );
-
+router.put("/:id",updateBug);
 router.post("/",authMiddleware,authorizeRoles("tester","admin"),createBug);
 router.get("/", authMiddleware, getBugs);
 router.get(

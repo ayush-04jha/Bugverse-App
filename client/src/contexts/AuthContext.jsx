@@ -30,6 +30,8 @@ const storedUser = localStorage.getItem("user");
     // Mock authentication - in real app, this would call an API
     try {
       const res = await instance.post("/auth/login", { email, password });
+      console.log("login data jo ayya:",res.data);
+      
       const { token, user } = res.data;
 
       localStorage.setItem("token", token);
@@ -51,6 +53,8 @@ const storedUser = localStorage.getItem("user");
         password,
         role,
       });
+      console.log(res.data);
+      
       const { token, user } = res.data;
       localStorage.setItem("token", token);
       setUser(user);

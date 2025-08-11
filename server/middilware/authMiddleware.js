@@ -11,9 +11,9 @@ const authMiddleware =async (req,res,next)=>{
         try{
         //    console.log("decoded=",process.env.JWT_SECRET);
           const decoded = jwt.verify(token,process.env.JWT_SECRET);
-          console.log("decodedPayload:",decoded);
+          // console.log("decodedPayload:",decoded);
           
-          req.user = await User.findById(decoded.id);
+          req.user = await User.findById(decoded.id).select("_id name role");
           
           
           next();

@@ -9,6 +9,8 @@
   import authRoutes from "./routes/authRoutes.js";
   import userRoutes from "./routes/userRouters.js"
   import commentRoutes from "./routes/commentRoutes.js"
+  import {getUserSocketId} from "./sockets/socket.js"; // socket config import
+  import setupSocket from "./sockets/socket.js";
   const app = express();
   const server = http.createServer(app);
   const io = new Server(server,{
@@ -17,7 +19,7 @@
         methods:['GET', 'POST', 'PATCH']
       }
   })
-
+setupSocket(io);
   // mongoose connection
   mongoose.connect(process.env.MONGO_URI)
   .then(()=>console.log("mongoose connected"))
@@ -41,15 +43,8 @@
   app.use("/api/auth", authRoutes);
   app.use("/api/users", userRoutes);
   app.use("/api/comments",commentRoutes);
-  io.on("connection", (socket) => {
-    console.log("socket connected", socket.id);
-    socket.on("disconnected", () => {
-      console.log("client disconnected:", socket.id);
-    });
-  });
 
 
- 
 
   const PORT = process.env.PORT || 5000;
   server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -9,7 +9,7 @@ const ReportBugForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    severity: 'medium',
+    severity: 'low',
     assignedTo: '',
     tags: ''
   });
@@ -23,14 +23,15 @@ const ReportBugForm = ({ onClose }) => {
 
     const bugData = {
       ...formData,
-      createdBy: user.id,
+      createdBy: user._id,
       tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : []
     };
 
-    //createBug(bugData);
-    console.log("bugData being sent:", bugData);
+    
 
     await instance.post("/bugs",bugData)
+    
+    
     setLoading(false);
     onClose();
   };
@@ -91,7 +92,7 @@ const ReportBugForm = ({ onClose }) => {
               </label>
               <select
                 id="severity"
-                value={formData.priority}
+                value={formData.severity}
                 onChange={(e) => setFormData({ ...formData, severity: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >

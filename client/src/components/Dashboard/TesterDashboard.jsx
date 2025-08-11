@@ -13,7 +13,7 @@ const TesterDashboard = ({ onBugClick }) => {
    
 
   const reportedBugs = bugs.filter(bug => bug.createdBy?._id === user._id);
-console.log("reported bugs hai TesterDashboard",reportedBugs);
+
 
   const stats = {
     total: reportedBugs.length,

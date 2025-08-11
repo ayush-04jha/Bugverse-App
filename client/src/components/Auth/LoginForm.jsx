@@ -98,14 +98,7 @@ const LoginForm = ({ onSwitchToSignup }) => {
         </button>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-        <p className="text-sm text-blue-800">
-          <strong>Demo accounts:</strong><br />
-          admin@bugverse.com (Admin)<br />
-          john@bugverse.com (Developer)<br />
-          jane@bugverse.com (Tester)
-        </p>
-      </div>
+    
     </div>
   );
 };

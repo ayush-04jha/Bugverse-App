@@ -21,7 +21,7 @@ const BugCard = ({ bug, onClick, showActions, children }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'open': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'in-progress': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'in progress': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'testing': return 'bg-purple-100 text-purple-800 border-purple-200';
       case 'resolved': return 'bg-green-100 text-green-800 border-green-200';
       case 'closed': return 'bg-gray-100 text-gray-800 border-gray-200';
@@ -47,8 +47,8 @@ const BugCard = ({ bug, onClick, showActions, children }) => {
           {bug.title}
         </h3>
         <div className="flex space-x-2">
-          <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(bug.priority)}`}>
-            {bug.priority}
+          <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(bug.severity)}`}>
+            {bug.severity}
           </span>
           <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(bug.status)}`}>
             {bug.status.replace('-', ' ')}

@@ -15,7 +15,7 @@ export const getUsersByRole = async(req,res)=>{
     } 
     // Admin sees everyone (query remains {})
       const users = await User.find(query).select("name email role");
-      console.log(users);
+   
       
       res.json(users);
 

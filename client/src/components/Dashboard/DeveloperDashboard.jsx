@@ -10,8 +10,14 @@ const DeveloperDashboard = ({ onBugClick }) => {
   const { bugs, updateBug, addComment } = useBugs();
   const [selectedBug, setSelectedBug] = useState(null);
   const [comment, setComment] = useState('');
+    console.log("bug aa rha hai kya??",bugs);
+    
 
-  const assignedBugs = bugs.filter(bug =>!bug.assignedTo|| bug.assignedTo.toString() === user.id);
+    
+  const assignedBugs = bugs.filter(bug =>
+  !bug.assignedTo || (bug.assignedTo._id && bug.assignedTo._id.toString() === user._id)
+);
+console.log("assigned bugs hai??",assignedBugs);
 
   const stats = {
     total: assignedBugs.length,
@@ -21,13 +27,15 @@ const DeveloperDashboard = ({ onBugClick }) => {
   };
 
   const handleStatusUpdate = (bugId, newStatus) => {
+    console.log("bugId ka status kya hai?",bugId);
+    
     updateBug(bugId, { status: newStatus });
   };
 
   const handleAddComment = (bugId) => {
     if (comment.trim()) {
       addComment(bugId, {
-        userId: user.id,
+        userId: user._id,
         userName: user.name,
         content: comment
       });
@@ -104,7 +112,7 @@ const DeveloperDashboard = ({ onBugClick }) => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleStatusUpdate(bug.id, 'testing');
+                    handleStatusUpdate(bug._id, 'testing');
                   }}
                   className="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full hover:bg-purple-200 transition-colors"
                   disabled={bug.status === 'testing' || bug.status === 'resolved'}
@@ -114,7 +122,7 @@ const DeveloperDashboard = ({ onBugClick }) => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleStatusUpdate(bug.id, 'resolved');
+                    handleStatusUpdate(bug._id, 'resolved');
                   }}
                   className="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full hover:bg-green-200 transition-colors"
                   disabled={bug.status === 'resolved'}
@@ -125,7 +133,7 @@ const DeveloperDashboard = ({ onBugClick }) => {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setSelectedBug(selectedBug === bug.id ? null : bug.id);
+                  setSelectedBug(selectedBug === bug._id ? null : bug._id);
                 }}
                 className="flex items-center space-x-1 text-gray-500 hover:text-gray-700"
               >
@@ -134,7 +142,7 @@ const DeveloperDashboard = ({ onBugClick }) => {
               </button>
             </div>
 
-            {selectedBug === bug.id && (
+            {selectedBug === bug._id && (
               <div className="mt-4 pt-4 border-t border-gray-100">
                 <div className="flex space-x-2">
                   <input
@@ -143,10 +151,10 @@ const DeveloperDashboard = ({ onBugClick }) => {
                     onChange={(e) => setComment(e.target.value)}
                     placeholder="Add a comment..."
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    onKeyPress={(e) => e.key === 'Enter' && handleAddComment(bug.id)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleAddComment(bug._id)}
                   />
                   <button
-                    onClick={() => handleAddComment(bug.id)}
+                    onClick={() => handleAddComment(bug._id)}
                     className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     <Send className="h-4 w-4" />
