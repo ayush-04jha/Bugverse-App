@@ -22,10 +22,8 @@ export const BugProvider = ({ children }) => {
   // Fetch bugs & users on mount
  useEffect(() => {
     if (!loggedInUser?._id) return;
-     const SOCKET_URL =
-  import.meta.env.MODE === "production"
-    ? "https://bugverse-app-1.onrender.com" // backend Render URL
-    : "http://localhost:5000";
+     const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
+  
 
     socket = io(SOCKET_URL, {
       query: { userId: loggedInUser._id },
