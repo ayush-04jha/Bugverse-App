@@ -10,11 +10,11 @@ server/.DS_Store
 # ===================
 # React App (Frontend)
 # ===================
-frontend/node_modules/
-frontend/.env
-frontend/dist/
-frontend/build/
-frontend/.DS_Store
+client/node_modules/
+client/.env.local
+client/dist/
+client/build/
+client/.DS_Store
 
 # ===================
 # System & IDE

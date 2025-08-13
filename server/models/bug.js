@@ -5,6 +5,7 @@ const bugSchema = new mongoose.Schema({
   description: String,
   severity: { type: String, enum: ['low', 'medium', 'high', 'critical'] },
   module:String,
+  videoUrl: String,
   tags:[String],
   status:{
     type : String,
