@@ -21,7 +21,7 @@ if(isProduction){
   
 }
 else{
-  console.log("nahi chal rha",);
+  console.log("nahi chal rha",isProduction);
   
 }
 

@@ -1,9 +1,9 @@
 import axios from "axios";
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL || // agar .env me set hai to ye use hoga
-  (import.meta.env.MODE === "development"
-    ? "http://localhost:5000/api" // local backend
-    : "https://your-render-api.onrender.com/api"); // render production backend
+  
+  import.meta.env.MODE === "production"
+    ?"https://your-render-api.onrender.com/api"  // local backend
+    : "http://localhost:5000/api" ; // render production backend
 
 
 const instance = axios.create(
