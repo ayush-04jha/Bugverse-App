@@ -37,7 +37,8 @@ const allowedOrigin = isProduction
   const io = new Server(server,{
     cors: {
         origin:allowedOrigin,
-        methods:['GET', 'POST', 'PATCH']
+        methods:['GET', 'POST', 'PATCH'],
+        credentials: true,
       }
   })
 setupSocket(io);
