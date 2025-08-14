@@ -97,6 +97,13 @@ const BugCard = ({ bug, onClick, showActions, children }) => {
         </div>
       )}
 
+      {bug.videoUrl && (
+  <div className="mb-4 w-[720px]">
+    
+    <a href={bug.videoUrl} rel="noopener noreferrer" target="_blank" className='text-blue-400'>Bug video available</a>
+  </div>
+)}
+
       {children}
     </div>
   );

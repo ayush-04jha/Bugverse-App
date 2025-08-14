@@ -2,7 +2,7 @@ import { Bug } from "../models/bug.js";
 import User from "../models/userModel.js";
 import mongoose from "mongoose";
 import { getUserSocketId } from "../sockets/socket.js";
-
+import { v2 as cloudinary } from "cloudinary";
 export const createBug = async (req, res) => {
   try {
     if (req.body.assignedTo === "") {
@@ -19,9 +19,25 @@ export const createBug = async (req, res) => {
       req.body.assignedTo = assignedDeveloper._id;
     }
 
+    // 2️⃣ Agar video file aayi hai to Cloudinary upload karo
+    let videoUrl = null;
+    if (req.file) {
+      videoUrl = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { resource_type: "video", folder: "bugverse_videos" },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result.secure_url);
+          }
+        );
+        uploadStream.end(req.file.buffer);
+      });
+    }
+
     const bug = new Bug({
       ...req.body,
       createdBy: req.user._id,
+      videoUrl,
     });
     await bug.save();
 
@@ -163,31 +179,25 @@ export const updateBug = async (req, res) => {
   try {
     const { id } = req.params;
     const bugToUpdate = await Bug.findById(id);
-    
-    
-if(req.body.status){
- bugToUpdate.status = req.body.status.replace("-", " ");
-}
-if(req.body.description){
-bugToUpdate.description = req.body.description;
-}
-if(req.body.severity){
- bugToUpdate.severity = req.body.severity;
-}
-if(req.body.title){
-bugToUpdate.title = req.body.title;
-}
-if(req.body.comments){
-bugToUpdate.comments = req.body.comments;
-}
-if(req.body.tags){
- bugToUpdate.tags = req.body.tags;}
-    
-    
-   
-    
-    
-   
+
+    if (req.body.status) {
+      bugToUpdate.status = req.body.status.replace("-", " ");
+    }
+    if (req.body.description) {
+      bugToUpdate.description = req.body.description;
+    }
+    if (req.body.severity) {
+      bugToUpdate.severity = req.body.severity;
+    }
+    if (req.body.title) {
+      bugToUpdate.title = req.body.title;
+    }
+    if (req.body.comments) {
+      bugToUpdate.comments = req.body.comments;
+    }
+    if (req.body.tags) {
+      bugToUpdate.tags = req.body.tags;
+    }
 
     await bugToUpdate.save();
 

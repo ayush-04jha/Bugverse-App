@@ -4,6 +4,7 @@ import authMiddleware from "../middilware/authMiddleware.js";
 import authorizeRoles from "../middilware/roleMiddleware.js";
 import {getBugSummaryForDev } from "../controllers/bugController.js";
 import { getUsersByRole } from "../controllers/userController.js";
+import { upload } from "../middilware/uploadMiddleware.js";
 const router = express.Router();
 router.get(
   "/admin/users",
@@ -12,7 +13,7 @@ router.get(
   getUsersByRole
 );
 router.put("/:id",updateBug);
-router.post("/",authMiddleware,authorizeRoles("tester","admin"),createBug);
+router.post("/",authMiddleware,authorizeRoles("tester","admin"),upload.single("video"),createBug);
 router.get("/", authMiddleware, getBugs);
 router.get(
   "/dev/bug-summary",
