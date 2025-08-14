@@ -24,7 +24,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200 px-6 py-4">
+    <nav className="b bg-white border-b border-gray-200 px-6 py-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center space-x-3">

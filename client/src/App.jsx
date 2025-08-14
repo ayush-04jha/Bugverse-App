@@ -44,7 +44,7 @@ function App() {
 
   return (
     <BugProvider>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
         <Navigation />
         
         {currentView === 'dashboard' && renderDashboard()}
