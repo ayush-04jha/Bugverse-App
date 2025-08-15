@@ -9,7 +9,7 @@ export default function LeaderboardPage({ onBack }) {
       <DeveloperLeaderboard />
       <button
         onClick={onBack}
-        className="mt-6 px-4 py-2  bg-gray-600 text-white rounded hover:bg-gray-700"
+        className="mt-6 px-4 py-2  bg-blue-600 hover:bg-blue-700 transition text-white rounded "
       >
         ← Back
       </button>
