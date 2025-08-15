@@ -1,34 +1,37 @@
-import React, { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useBugs } from '../../contexts/BugContext';
-import { Bug, Clock, CheckCircle, AlertTriangle, MessageCircle, Send } from 'lucide-react';
-import BugCard from '../Common/BugCard';
-import StatusBadge from '../Common/StatusBadge';
+import React, { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { useBugs } from "../../contexts/BugContext";
+import {
+  Bug,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+  MessageCircle,
+  Send,
+} from "lucide-react";
+import BugCard from "../Common/BugCard";
 
 const DeveloperDashboard = ({ onBugClick }) => {
   const { user } = useAuth();
   const { bugs, updateBug, addComment } = useBugs();
   const [selectedBug, setSelectedBug] = useState(null);
-  const [comment, setComment] = useState('');
-    console.log("bug aa rha hai kya??",bugs);
-    
+  const [comment, setComment] = useState("");
 
-    
-  const assignedBugs = bugs.filter(bug =>
-  !bug.assignedTo || (bug.assignedTo._id && bug.assignedTo._id.toString() === user._id)
-);
-console.log("assigned bugs hai??",assignedBugs);
+  const assignedBugs = bugs.filter(
+    (bug) =>
+      !bug.assignedTo ||
+      (bug.assignedTo._id && bug.assignedTo._id.toString() === user._id)
+  );
 
   const stats = {
     total: assignedBugs.length,
-    open: assignedBugs.filter(bug => bug.status === 'open').length,
-    inProgress: assignedBugs.filter(bug => bug.status === 'in-progress').length,
-    testing: assignedBugs.filter(bug => bug.status === 'testing').length
+    open: assignedBugs.filter((bug) => bug.status === "open").length,
+    inProgress: assignedBugs.filter((bug) => bug.status === "in-progress")
+      .length,
+    testing: assignedBugs.filter((bug) => bug.status === "testing").length,
   };
 
   const handleStatusUpdate = (bugId, newStatus) => {
-    console.log("bugId ka status kya hai?",bugId);
-    
     updateBug(bugId, { status: newStatus });
   };
 
@@ -37,17 +40,21 @@ console.log("assigned bugs hai??",assignedBugs);
       addComment(bugId, {
         userId: user._id,
         userName: user.name,
-        content: comment
+        content: comment,
       });
-      setComment('');
+      setComment("");
     }
   };
 
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Developer Dashboard</h1>
-        <p className="text-gray-600">Manage your assigned bugs and update their status</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Developer Dashboard
+        </h1>
+        <p className="text-gray-600">
+          Manage your assigned bugs and update their status
+        </p>
       </div>
 
       {/* Stats Grid */}
@@ -55,7 +62,9 @@ console.log("assigned bugs hai??",assignedBugs);
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Assigned</p>
+              <p className="text-sm font-medium text-gray-600">
+                Total Assigned
+              </p>
               <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
             </div>
             <Bug className="h-8 w-8 text-blue-600" />
@@ -76,7 +85,9 @@ console.log("assigned bugs hai??",assignedBugs);
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">In Progress</p>
-              <p className="text-3xl font-bold text-yellow-600">{stats.inProgress}</p>
+              <p className="text-3xl font-bold text-yellow-600">
+                {stats.inProgress}
+              </p>
             </div>
             <Clock className="h-8 w-8 text-yellow-600" />
           </div>
@@ -86,7 +97,9 @@ console.log("assigned bugs hai??",assignedBugs);
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Testing</p>
-              <p className="text-3xl font-bold text-purple-600">{stats.testing}</p>
+              <p className="text-3xl font-bold text-purple-600">
+                {stats.testing}
+              </p>
             </div>
             <CheckCircle className="h-8 w-8 text-purple-600" />
           </div>
@@ -95,37 +108,39 @@ console.log("assigned bugs hai??",assignedBugs);
 
       {/* Assigned Bugs */}
       <div className="space-y-6">
-        {assignedBugs.map(bug => (
+        {assignedBugs.map((bug) => (
           <BugCard key={bug._id} bug={bug} onClick={() => onBugClick(bug._id)}>
             <div className="flex items-center justify-between pt-4 border-t border-gray-100">
               <div className="flex space-x-2">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleStatusUpdate(bug._id, 'in-progress');
+                    handleStatusUpdate(bug._id, "in-progress");
                   }}
                   className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full hover:bg-yellow-200 transition-colors"
-                  disabled={bug.status === 'in-progress'}
+                  disabled={bug.status === "in-progress"}
                 >
                   Start Work
                 </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleStatusUpdate(bug._id, 'testing');
+                    handleStatusUpdate(bug._id, "testing");
                   }}
                   className="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full hover:bg-purple-200 transition-colors"
-                  disabled={bug.status === 'testing' || bug.status === 'resolved'}
+                  disabled={
+                    bug.status === "testing" || bug.status === "resolved"
+                  }
                 >
                   Ready for Testing
                 </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleStatusUpdate(bug._id, 'resolved');
+                    handleStatusUpdate(bug._id, "resolved");
                   }}
                   className="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full hover:bg-green-200 transition-colors"
-                  disabled={bug.status === 'resolved'}
+                  disabled={bug.status === "resolved"}
                 >
                   Mark Resolved
                 </button>
@@ -151,7 +166,9 @@ console.log("assigned bugs hai??",assignedBugs);
                     onChange={(e) => setComment(e.target.value)}
                     placeholder="Add a comment..."
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    onKeyPress={(e) => e.key === 'Enter' && handleAddComment(bug._id)}
+                    onKeyPress={(e) =>
+                      e.key === "Enter" && handleAddComment(bug._id)
+                    }
                   />
                   <button
                     onClick={() => handleAddComment(bug._id)}
@@ -163,16 +180,25 @@ console.log("assigned bugs hai??",assignedBugs);
 
                 {bug.comments?.length > 0 && (
                   <div className="mt-4 space-y-2">
-                    <h4 className="text-sm font-medium text-gray-700">Comments:</h4>
-                    {bug.comments.slice(-3).map(comment => (
-                      <div key={comment.id} className="bg-gray-50 rounded-lg p-3">
+                    <h4 className="text-sm font-medium text-gray-700">
+                      Comments:
+                    </h4>
+                    {bug.comments.slice(-3).map((comment) => (
+                      <div
+                        key={comment.id}
+                        className="bg-gray-50 rounded-lg p-3"
+                      >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-medium text-gray-700">{comment.userName}</span>
+                          <span className="text-sm font-medium text-gray-700">
+                            {comment.userName}
+                          </span>
                           <span className="text-xs text-gray-500">
                             {new Date(comment.createdAt).toLocaleDateString()}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-600">{comment.content}</p>
+                        <p className="text-sm text-gray-600">
+                          {comment.content}
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -186,8 +212,12 @@ console.log("assigned bugs hai??",assignedBugs);
       {assignedBugs.length === 0 && (
         <div className="text-center py-12">
           <Bug className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No bugs assigned</h3>
-          <p className="text-gray-600">You don't have any bugs assigned to you yet</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No bugs assigned
+          </h3>
+          <p className="text-gray-600">
+            You don't have any bugs assigned to you yet
+          </p>
         </div>
       )}
     </div>

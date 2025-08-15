@@ -105,7 +105,7 @@ const BugDetailPage = ({ bugId, onBack }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="border-2 border-s-violet-800 max-w-4xl mx-auto p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <button

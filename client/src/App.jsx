@@ -7,7 +7,7 @@ import AdminDashboard from './components/Dashboard/AdminDashboard';
 import DeveloperDashboard from './components/Dashboard/DeveloperDashboard';
 import TesterDashboard from './components/Dashboard/TesterDashboard';
 import BugDetailPage from './components/BugDetail/BugDetailPage';
-
+import LeaderboardPage from './components/Common/LeaderBoardPage';
 function App() {
   const { user } = useAuth();
   const [currentView, setCurrentView] = useState('dashboard');
@@ -26,6 +26,10 @@ function App() {
     setSelectedBugId(null);
   };
 
+  const handleGoToLeaderboard = () => {
+    setCurrentView('leaderboard');
+  };
+
   if (!user) {
     return <AuthPage />;
   }
@@ -34,9 +38,9 @@ function App() {
       case 'admin':
         return <AdminDashboard onBugClick={handleBugClick} />;
       case 'developer':
-        return <DeveloperDashboard onBugClick={handleBugClick} />;
+        return <DeveloperDashboard onBugClick={handleBugClick}  />;
       case 'tester':
-        return <TesterDashboard onBugClick={handleBugClick} />;
+        return <TesterDashboard onBugClick={handleBugClick}/>;
       default:
         return <div>Unknown role</div>;
     }
@@ -45,7 +49,7 @@ function App() {
   return (
     <BugProvider>
       <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
-        <Navigation />
+        <Navigation  onLeaderboardClick={handleGoToLeaderboard} />
         
         {currentView === 'dashboard' && renderDashboard()}
         
@@ -54,6 +58,9 @@ function App() {
             bugId={selectedBugId} 
             onBack={handleBackToDashboard} 
           />
+        )}
+        {currentView === 'leaderboard' && (
+          <LeaderboardPage onBack={handleBackToDashboard} />
         )}
       </div>
     </BugProvider>

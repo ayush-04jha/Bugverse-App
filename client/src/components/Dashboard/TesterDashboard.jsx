@@ -5,7 +5,7 @@ import { Plus, Bug, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
 import BugCard from '../Common/BugCard';
 import ReportBugForm from './ReportBugForm';
 
-const TesterDashboard = ({ onBugClick }) => {
+const TesterDashboard = ({ onBugClick, onLeaderboardClick }) => {
   const { user } = useAuth();
   const { bugs,users } = useBugs();
   const [showReportForm, setShowReportForm] = useState(false);

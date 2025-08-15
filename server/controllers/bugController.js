@@ -179,7 +179,8 @@ export const updateBug = async (req, res) => {
   try {
     const { id } = req.params;
     const bugToUpdate = await Bug.findById(id);
-
+   
+    const bugResolvedBy = id;
     if (req.body.status) {
       bugToUpdate.status = req.body.status.replace("-", " ");
     }
@@ -199,11 +200,30 @@ export const updateBug = async (req, res) => {
       bugToUpdate.tags = req.body.tags;
     }
 
+    if (req.body.status === "resolved") {
+      bugToUpdate.resolvedBy = req.user._id;
+    }
+    
+
     await bugToUpdate.save();
 
     res.status(201).json({ message: "status updated successfully!" });
   } catch (err) {
     console.error("Error updating bug:", err);
     res.status(501).json({ message: "Error updating bug's status" });
+  }
+};
+
+export const getResolvedBug = async (req, res) => {
+  try {
+    const bugs = await Bug.find({ status: "resolved" });
+
+    await Bug.populate(bugs, { path: "resolvedBy", select: "name" });
+
+    res.json(bugs);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error fetching resolved bugs", error: err.message });
   }
 };

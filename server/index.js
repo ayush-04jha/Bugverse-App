@@ -9,7 +9,6 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRouters.js";
 import commentRoutes from "./routes/commentRoutes.js";
 import setupSocket from "./sockets/socket.js";
-import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import bugRoutes from "./routes/bugRoutes.js";
 const app = express();

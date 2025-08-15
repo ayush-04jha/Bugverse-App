@@ -2,45 +2,51 @@ import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-
-
-export const signUp = async (req,res)=>{
+export const signUp = async (req, res) => {
   console.log(req.body);
-  
-   const {name,email,password,role} = req.body;
-   try{
-    
-    const userExist = await User.findOne({email});
-    if (userExist) return res.status(400).json({msg:"User already exists"});
 
-    const hashedPassword = await bcrypt.hash(password,10);
-    const user = await User.create({name,email,password:hashedPassword,role});
-    const token = jwt.sign({id:user._id,role:user.role},process.env.JWT_SECRET,{expiresIn:"7d"});
-     res.status(201).json({ user, token });
-   }
-   catch(err){
-   
-     res.status(500).json({ msg: "Server error" });
-   }
-}
+  const { name, email, password, role } = req.body;
+  try {
+    const userExist = await User.findOne({ email });
+    if (userExist) return res.status(400).json({ msg: "User already exists" });
 
-export const logIn = async (req,res)=>{
- const {email,password} = req.body;
- try{
-   const user =await User.findOne({email})
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role,
+    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+    res.status(201).json({ user, token });
+  } catch (err) {
+    res.status(500).json({ msg: "Server error" });
+  }
+};
 
-   
-   if(!user) return res.status(400).json({msg:"invalid cradentials"});
+export const logIn = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
 
-   const isMatch = await bcrypt.compare(password,user.password);
+    if (!user) return res.status(400).json({ msg: "invalid cradentials" });
 
-   if(!isMatch) return res.status(400).json({msg:"Wrong Password!"});
+    const isMatch = await bcrypt.compare(password, user.password);
 
-   const token = jwt.sign({ id: user._id,role:user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
-     res.status(200).json({ user, token });
- }catch(err){
-  console.error("Login Error:", err);
-   res.status(500).json({ msg: "Server error" });
- }
-}
+    if (!isMatch) return res.status(400).json({ msg: "Wrong Password!" });
 
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+    res.status(200).json({ user, token });
+  } catch (err) {
+    console.error("Login Error:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};

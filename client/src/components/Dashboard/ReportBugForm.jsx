@@ -41,8 +41,10 @@ const ReportBugForm = ({ onClose }) => {
     }
 
      for (let [key, value] of bugData.entries()) {
+       console.log("assignTo?",key);
 }
 
+    
      
      try {
       await instance.post("/bugs", bugData, {
