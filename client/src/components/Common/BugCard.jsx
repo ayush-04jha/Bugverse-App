@@ -24,10 +24,12 @@ const BugCard = ({ bug, onClick, showActions, children }) => {
   };
 
   const getStatusColor = (status) => {
+    console.log(status);
+    
     switch (status) {
       case "open":
         return "bg-blue-100 text-blue-800 border-blue-200";
-      case "in-progress":
+      case "in progress":
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case "testing":
         return "bg-purple-100 text-purple-800 border-purple-200";
