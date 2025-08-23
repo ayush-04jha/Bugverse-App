@@ -112,37 +112,105 @@ export const getBugs = async (req, res) => {
   }
 };
 
-export const getBugSummaryForDev = async (req, res) => {
+export const bugSummary = async (req, res) => {
   try {
-    const devId = req.user.id;
+    //Overall summary
+    const total = await Bug.countDocuments();
+    const open = await Bug.countDocuments({ status: "open" });
+    const closed = await Bug.countDocuments({ status: "closed" });
+    const critical = await Bug.countDocuments({ severity: "critical" });
 
-    const summary = await Bug.aggregate([
+    // 2️⃣ Personal summary (agar userId available hai)
+    const userId = req.user?._id; // agar auth middleware use ho raha hai
+    let me = { assigned: 0, open: 0, closed: 0, critical: 0 };
+    if (userId) {
+      me.assigned = await Bug.countDocuments({ assignedTo: userId });
+      me.open = await Bug.countDocuments({
+        assignedTo: userId,
+        status: "open",
+      });
+      me.closed = await Bug.countDocuments({
+        assignedTo: userId,
+        status: "closed",
+      });
+      me.critical = await Bug.countDocuments({
+        assignedTo: userId,
+        severity: "critical",
+      });
+    }
+
+    //Team summary
+    // Top resolvers
+    const topResolversAgg = await Bug.aggregate([
+      { $match: { status: "resolved", resolvedBy: { $ne: null } } }, // resolved bugs
       {
-        $match: { assignedTo: new mongoose.Types.ObjectId(devId) },
-      },
-      {
-        $group: {
-          _id: "$status",
-          count: { $sum: 1 },
+        $lookup: {
+          from: "users",
+          localField: "resolvedBy",
+          foreignField: "_id",
+          as: "user",
         },
       },
+      { $unwind: "$user" },
+      {
+        $group: {
+          _id: "$user.name",
+          closed: { $sum: 1 },
+        },
+      },
+      { $sort: { closed: -1 } },
+      { $limit: 5 },
     ]);
 
-    const result = {
-      totalAssigned: 0,
-      open: 0,
-      inprogress: 0,
-      testing: 0,
-      closed: 0,
-    };
 
-    summary.forEach((item) => {
-      result[item._id] = item.count;
-      result.totalAssigned += item.count;
+    const topResolvers = topResolversAgg.map((r) => ({
+      developer: r._id,
+      closed: r.closed,
+    }));
+    const pendingByDevAgg = await Bug.aggregate([
+      { $match: { status: "open" } },
+      { $group: { _id: "$assignedToName", open: { $sum: 1 } } },
+      { $sort: { open: -1 } },
+    ]);
+    const pendingByDev = pendingByDevAgg.map((r) => ({
+      developer: r._id,
+      open: r.open,
+    }));
+
+    // 4️⃣ Last week comparison (solved vs remaining, increased vs decreased)
+    const lastWeek = new Date();
+    lastWeek.setDate(lastWeek.getDate() - 7);
+
+    const solvedLastWeek = await Bug.countDocuments({
+      status: "resolved",
+      updatedAt: { $gte: lastWeek },
     });
-    res.status(200).json(result);
-  } catch (err) {
-    res.status(500).json({ message: "Error fetching bug summary", error });
+    const totalRemaining = total - solvedLastWeek;
+
+    // Increased vs decreased: assume "increased" = new bugs last week, "decreased" = closed last week
+    const increasedLastWeek = await Bug.countDocuments({
+      createdAt: { $gte: lastWeek },
+    });
+    const decreasedLastWeek = solvedLastWeek;
+
+    // 5️⃣ Recent bugs
+    const recentBugs = await Bug.find().sort({ createdAt: -1 }).limit(10);
+
+    res.json({
+      overall: { total, open, closed, critical },
+      me,
+      team: { topResolvers, pendingByDev },
+      lastWeek: {
+        solved: solvedLastWeek,
+        remaining: totalRemaining,
+        increased: increasedLastWeek,
+        decreased: decreasedLastWeek,
+      },
+      recent: recentBugs,
+    });
+  } catch (error) {
+    console.error("Error in bugSummary:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -179,7 +247,7 @@ export const updateBug = async (req, res) => {
   try {
     const { id } = req.params;
     const bugToUpdate = await Bug.findById(id);
-   
+
     const bugResolvedBy = id;
     if (req.body.status) {
       bugToUpdate.status = req.body.status.replace("-", " ");
@@ -203,7 +271,6 @@ export const updateBug = async (req, res) => {
     if (req.body.status === "resolved") {
       bugToUpdate.resolvedBy = req.user._id;
     }
-    
 
     await bugToUpdate.save();
 

@@ -24,7 +24,7 @@ const BugCard = ({ bug, onClick, showActions, children }) => {
   };
 
   const getStatusColor = (status) => {
-    console.log(status);
+    
     
     switch (status) {
       case "open":
