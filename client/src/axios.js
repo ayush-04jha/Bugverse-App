@@ -15,5 +15,19 @@ instance.interceptors.request.use(
         return config;
     }
 )
+instance.interceptors.response.use(
+  response => response, // normal response pass through
+  error => {
+    if (error.response && error.response.status === 401) {
+      // Token invalid/expired
+      localStorage.removeItem("token"); // clear token
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login"; // fallback SPA redirect
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 
 export default instance;

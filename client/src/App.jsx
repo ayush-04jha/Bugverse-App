@@ -1,82 +1,83 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from "./contexts/AuthContext";
-import { BugProvider } from "./contexts/BugContext";
-import Navigation from "./components/Navigation";
-import AuthPage from "./components/Auth/AuthPage";
-import AdminDashboard from "./components/Dashboard/AdminDashboard";
-import DeveloperDashboard from "./components/Dashboard/DeveloperDashboard";
-import TesterDashboard from "./components/Dashboard/TesterDashboard";
-import BugDetailPage from "./components/BugDetail/BugDetailPage";
-import LeaderboardPage from "./components/Common/LeaderBoardPage";
-import BugSummary from "./components/Common/BugsSummary";
-
-function DashboardRouter({ onBugClick }) {
-  const { user } = useAuth();
-
-  switch (user.role) {
-    case "admin":
-      return <AdminDashboard onBugClick={onBugClick} />;
-    case "developer":
-      return <DeveloperDashboard onBugClick={onBugClick} />;
-    case "tester":
-      return <TesterDashboard onBugClick={onBugClick} />;
-    default:
-      return <div>Unknown role</div>;
-  }
-}
-
-function AppRoutes({ onBugClick }) {
-  return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="/dashboard" element={<DashboardRouter onBugClick={onBugClick} />} />
-      <Route path="/bug/:bugId" element={<BugDetailPage />} />
-      <Route path="/leaderboard" element={<LeaderboardPage />} />
-      <Route path="/bugsummary" element={<BugSummary />} />
-      <Route path="*" element={<div>404 Page Not Found</div>} />
-    </Routes>
-  );
-}
-
+import React, { useState } from 'react';
+import { useAuth } from './contexts/AuthContext';
+import { BugProvider } from './contexts/BugContext';
+import Navigation from './components/Navigation';
+import AuthPage from './components/Auth/AuthPage';
+import AdminDashboard from './components/Dashboard/AdminDashboard';
+import DeveloperDashboard from './components/Dashboard/DeveloperDashboard';
+import TesterDashboard from './components/Dashboard/TesterDashboard';
+import BugDetailPage from './components/BugDetail/BugDetailPage';
+import LeaderboardPage from './components/Common/LeaderBoardPage';
+import BugSummary from './components/Common/BugsSummary';
+import DeveloperLeaderboard from './components/Common/developerLeaderBoard';
 function App() {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const [currentView, setCurrentView] = useState('dashboard');
+  const [selectedBugId, setSelectedBugId] = useState(null);
 
   const handleBugClick = (bugId) => {
-    navigate(`/bug/${bugId}`);
+    console.log("bugId:",bugId);
+    
+    setSelectedBugId(bugId);
+    setCurrentView('bug-detail');
+  };
+     
+     
+  const handleBackToDashboard = () => {
+    setCurrentView('dashboard');
+    setSelectedBugId(null);
   };
 
   const handleGoToLeaderboard = () => {
-    navigate("/leaderboard");
+    setCurrentView('leaderboard');
   };
-
-  const handleGotoBugSummary = () => {
-    navigate("/bugsummary");
-  };
-
+const handleGotoBugSummary=()=>{
+  setCurrentView('bugsummary');
+}
   if (!user) {
     return <AuthPage />;
   }
+  const renderDashboard = () => {
+    switch (user.role) {
+      case 'admin':
+        return <AdminDashboard onBugClick={handleBugClick} />;
+      case 'developer':
+        return <DeveloperDashboard onBugClick={handleBugClick}  />;
+      case 'tester':
+        return <TesterDashboard onBugClick={handleBugClick}/>;
+      default:
+        return <div>Unknown role</div>;
+    }
+  };
 
   return (
     <BugProvider>
       <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
-        <Navigation
-          onLeaderboardClick={handleGoToLeaderboard}
-          onBugSummaryClick={handleGotoBugSummary}
-        />
-        <AppRoutes onBugClick={handleBugClick} />
+        <Navigation  onLeaderboardClick={handleGoToLeaderboard} onBugSummaryClick={handleGotoBugSummary}/>
+        
+        {currentView === 'dashboard' && renderDashboard()}
+        
+        {currentView === 'bug-detail' && (
+          <BugDetailPage 
+            bugId={selectedBugId} 
+            onBack={handleBackToDashboard} 
+          />
+        )}
+        {currentView === 'leaderboard' && (
+          <LeaderboardPage onBack={handleBackToDashboard} />
+        )}
+        {
+          currentView==="bugsummary"&&(
+            <BugSummary onBack={handleBackToDashboard}/>
+          )
+        }
       </div>
     </BugProvider>
   );
 }
 
-// Wrap App with Router in index.js
-export default function WrappedApp() {
-  return (
-    <Router>
-      <App />
-    </Router>
-  );
-}
+export default App;
+
+
+
+
