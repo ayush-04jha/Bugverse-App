@@ -1,12 +1,16 @@
 import React from "react";
 import { useBugs } from "../../contexts/BugContext";
 import { Calendar, User, Tag, MessageCircle } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 const BugCard = ({ bug, onClick, showActions, children }) => {
   const { getUserById } = useBugs();
-
+  const navigate = useNavigate();
   const assignedUser = bug.assignedTo ? getUserById(bug.assignedTo) : null;
   const reportedUser = getUserById(bug.createdBy?._id);
+
+  const openBug = (bugId) => {
+    navigate(`/bug/${bugId}`);
+  };
 
   const getPriorityColor = (priority) => {
     switch (priority) {
@@ -24,8 +28,8 @@ const BugCard = ({ bug, onClick, showActions, children }) => {
   };
 
   const getStatusColor = (status) => {
-    
-    
+
+
     switch (status) {
       case "open":
         return "bg-blue-100 text-blue-800 border-blue-200";
@@ -52,10 +56,9 @@ const BugCard = ({ bug, onClick, showActions, children }) => {
 
   return (
     <div
-      className={`bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow ${
-        onClick ? "cursor-pointer" : ""
-      }`}
-      onClick={onClick}
+      className={`bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow ${onClick ? "cursor-pointer" : ""
+        }`}
+      onClick={() => navigate(`/bug/${bug._id}`)}
     >
       <div className="flex items-start justify-between mb-3">
         <h3 className="text-lg font-semibold text-gray-900 flex-1 mr-4">

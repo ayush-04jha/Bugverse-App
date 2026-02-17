@@ -47,9 +47,7 @@ const ReportBugForm = ({ onClose }) => {
     
      
      try {
-      await instance.post("/bugs", bugData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+      await createBug(bugData);
     setLoading(false);
     onClose();
      } catch (err) {

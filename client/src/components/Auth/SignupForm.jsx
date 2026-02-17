@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Eye, EyeOff, UserPlus } from 'lucide-react';
-
+import { useNavigate } from "react-router-dom";
+import instance from "../../axios";
 const SignupForm = ({ onSwitchToLogin }) => {
+
   const { signup } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,46 +18,81 @@ const SignupForm = ({ onSwitchToLogin }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [signupSuccess, setSignupSuccess] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  useEffect(() => {
+    if (countdown === 0) return;
+
+    const timer = setTimeout(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [countdown]);
+
+  const handleResend = async () => {
+    try {
+      setResendLoading(true);
+
+      await instance.post("/auth/resend-verification", {
+        email: formData.email,
+      });
+        
+        
+      setCountdown(60);
+    } catch (err) {
+      alert(err.response?.data?.msg || "Error resending email");
+    } finally {
+      setResendLoading(false);
+    }
+  };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
     }
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    
+
     return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    
+
     setLoading(true);
     setErrors({});
-    
-    await signup(formData.name, formData.email, formData.password, formData.role);
+
+    const res = await signup(formData.name, formData.email, formData.password, formData.role);
+
+    console.log("Signup response:", res);
+    if (res?.msg) {
+      setSignupSuccess(true);
+      setCountdown(60);
+    }
     setLoading(false);
   };
 
@@ -64,8 +102,7 @@ const SignupForm = ({ onSwitchToLogin }) => {
         <h2 className="text-3xl font-bold text-gray-900">Create account</h2>
         <p className="mt-2 text-gray-600">Join BugVerse and start tracking bugs</p>
       </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {!signupSuccess ? (<form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
             Full name
@@ -172,7 +209,36 @@ const SignupForm = ({ onSwitchToLogin }) => {
           <UserPlus className="h-4 w-4" />
           <span>{loading ? 'Creating account...' : 'Create account'}</span>
         </button>
-      </form>
+      </form>) : (
+        <div className="text-center space-y-4">
+          <h3 className="text-lg font-semibold text-green-600">
+            Account created successfully 🎉
+          </h3>
+          <p className="text-gray-600">
+            Please check your email to verify your account.
+          </p>
+
+          <button
+            onClick={handleResend}
+            disabled={countdown > 0 || resendLoading}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-2 px-4 rounded-lg transition-colors"
+          >
+            {countdown > 0
+              ? `Resend available in ${countdown}s`
+              : resendLoading
+                ? "Sending..."
+                : "Resend Verification Email"}
+          </button>
+
+          <button
+            onClick={onSwitchToLogin}
+            className="text-blue-600 text-sm"
+          >
+            Go to Login
+          </button>
+        </div>
+      )}
+
 
       <div className="text-center">
         <button

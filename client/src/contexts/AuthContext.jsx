@@ -1,8 +1,11 @@
 import React, { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext(undefined);
+
+let logoutHandler;
 import instance from "../axios";
 import { useEffect } from "react";
+
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -15,37 +18,41 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-  const storedUser = localStorage.getItem("user");
-  return storedUser ? JSON.parse(storedUser) : null;
-});
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
-useEffect(()=>{
-const storedUser = localStorage.getItem("user");
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
-},[])
+  }, [])
 
   const login = async (email, password) => {
     // Mock authentication - in real app, this would call an API
     try {
-      const res = await instance.post("/auth/login", { email, password });
       
+      const res = await instance.post("/auth/login", { email, password });
+
       const { token, user } = res.data;
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       setUser(user);
-      return true;
+      
+      return user;
     } catch (error) {
       console.error("Login failed:", error.response?.data || error.message);
-      return false;
+      return null;
     }
   };
 
   const signup = async (name, email, password, role) => {
     // Mock signup - in real app, this would call an API
     try {
+      console.log("yah tak paucha");
+
       const res = await instance.post("/auth/signup", {
         name,
         email,
@@ -54,22 +61,25 @@ const storedUser = localStorage.getItem("user");
       });
       console.log(res.data);
       
-      const { token, user } = res.data;
-      localStorage.setItem("token", token);
-      setUser(user);
-      return true;
+      
+      
+      
+      return res.data;
     } catch (error) {
       console.error("Signup failed:", error.response?.data || error.message);
-      return false;
+      return null;
     }
   };
 
   const logout = () => {
+    
     localStorage.removeItem("token");
-     localStorage.removeItem("user");
+    localStorage.removeItem("user");
     setUser(null);
+    
+    
   };
-
+    logoutHandler = logout;
   return (
     <AuthContext.Provider
       value={{
@@ -82,4 +92,7 @@ const storedUser = localStorage.getItem("user");
       {children}
     </AuthContext.Provider>
   );
+};
+export const logoutUser = () => {
+  if (logoutHandler) logoutHandler();
 };

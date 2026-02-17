@@ -6,12 +6,13 @@ import StatusBadge from '../Common/StatusBadge';
 import PriorityBadge from '../Common/PriorityBadge';
 import instance from '../../axios';
 import socket from '../../socket';
-
-const BugDetailPage = ({ bugId, onBack }) => {
+import { useParams, useNavigate } from "react-router-dom";
+const BugDetailPage = () => {
+  const { id } = useParams(); 
   const { user } = useAuth();
   const { getBugById, getUserById, updateBug, addComment, users } = useBugs();
-  const bug = getBugById(bugId);
-  
+  const bug = getBugById(id);
+    const navigate = useNavigate();
   const [comment, setComment] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
@@ -23,7 +24,7 @@ const BugDetailPage = ({ bugId, onBack }) => {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Bug not found</h2>
           <p className="text-gray-600 mb-4">The bug you're looking for doesn't exist.</p>
           <button
-            onClick={onBack}
+            onClick={() => navigate(-1)}
             className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -59,7 +60,7 @@ const BugDetailPage = ({ bugId, onBack }) => {
     };
   
     
-    updateBug(bugId, updates);
+    updateBug(id, updates);
     setIsEditing(false);
   };
 
@@ -72,19 +73,10 @@ const BugDetailPage = ({ bugId, onBack }) => {
     if (comment.trim()) {
 
       try {
-        const res = await instance.post(`/comments/bugs/${bugId}/comment`, {
+        const res = await instance.post(`/comments/bugs/${id}/comment`, {
         text: comment,
       });
-        
-      const newComment  = res.data;
-
-      // emit to socket
-      socket.emit("newComment",newComment)
-
-
-     
-
-      setComment('');
+        setComment('');
 
       } catch (err) {
           console.error('Failed to post comment:', err);
@@ -109,7 +101,7 @@ const BugDetailPage = ({ bugId, onBack }) => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <button
-          onClick={onBack}
+          onClick={() => navigate(-1)}
           className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -325,7 +317,7 @@ const BugDetailPage = ({ bugId, onBack }) => {
               </div>
             ) : (
               bug.comments?.map(comment => (
-                <div key={comment.id} className="flex space-x-3">
+                <div key={comment._id} className="flex space-x-3">
                   <div className="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
                     <User className="h-4 w-4 text-gray-600" />
                   </div>

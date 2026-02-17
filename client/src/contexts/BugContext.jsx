@@ -101,18 +101,22 @@ export const BugProvider = ({ children }) => {
   }, []);
 
   // Local bug creation
-  const createBug = (bugData) => {
-    const newBug = {
-      _id: Date.now().toString(),
-      ...bugData,
-      status: "open",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      comments: [],
-    };
-    setBugs((prev) => [newBug, ...prev]);
-    return newBug;
-  };
+  const createBug = async (bugData) => {
+  try {
+    const res = await instance.post("/bugs", bugData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    const savedBug = res.data;
+
+    setBugs((prev) => [savedBug, ...prev]);  // 🔥 real DB bug add
+
+    return savedBug;
+  } catch (err) {
+    console.error("Create bug failed:", err);
+    throw err;
+  }
+};
 
   // Local bug update
   const updateBug = async (bugId, updates) => {

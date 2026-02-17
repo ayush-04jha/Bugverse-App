@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = ({ onSwitchToSignup }) => {
   const { login } = useAuth();
@@ -9,7 +10,7 @@ const LoginForm = ({ onSwitchToSignup }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
+   const navigate = useNavigate();
 
 
 
@@ -18,9 +19,12 @@ const LoginForm = ({ onSwitchToSignup }) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    
-    const success = await login(formData.email, formData.password);
-    if (!success) {
+
+    const user = await login(formData.email, formData.password);
+    if(user){
+      navigate("/", { replace: true });
+    }
+    else {
       setError('Invalid email or password. Try admin@bugverse.com with any password.');
     }
     setLoading(false);
@@ -98,7 +102,7 @@ const LoginForm = ({ onSwitchToSignup }) => {
         </button>
       </div>
 
-    
+
     </div>
   );
 };

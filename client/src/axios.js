@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import { logoutUser } from "./contexts/AuthContext";
   
 
 
@@ -20,10 +21,9 @@ instance.interceptors.response.use(
   error => {
     if (error.response && error.response.status === 401) {
       // Token invalid/expired
+      logoutUser();  
       localStorage.removeItem("token"); // clear token
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login"; // fallback SPA redirect
-      }
+      
     }
     return Promise.reject(error);
   }
