@@ -9,7 +9,7 @@ export const sendVerificationEmail = async (email, token) => {
     },
   });
 
-  const verificationLink = `http://localhost:5173/verify/${token}`;
+  const verificationLink = `${process.env.CLIENT_URL}/verify/${token}`;
 
   await transporter.sendMail({
     from: `"BugVerse" <${process.env.EMAIL_USER}>`,
