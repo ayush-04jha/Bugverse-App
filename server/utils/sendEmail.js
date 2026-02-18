@@ -2,11 +2,16 @@ import nodemailer from "nodemailer"; // Resend ki jagah Nodemailer import karo
 
 // 1. Transporter setup (Isey function ke bahar rakhna best practice hai)
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465, // Explicitly secure port use kar rahe hain
+  secure: true, // port 465 ke liye true hota hai
   auth: {
     user: process.env.EMAIL_USER, // Tera Gmail ID (e.g., coderbhai@gmail.com)
     pass: process.env.EMAIL_PASS, // Tera 16-digit Gmail App Password
   },
+  tls: {
+    rejectUnauthorized: false
+  }
 });
 
 export const sendVerificationEmail = async (email, token) => {
