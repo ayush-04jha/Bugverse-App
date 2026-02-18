@@ -3,8 +3,9 @@ import nodemailer from "nodemailer"; // Resend ki jagah Nodemailer import karo
 // 1. Transporter setup (Isey function ke bahar rakhna best practice hai)
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465, // Explicitly secure port use kar rahe hain
-  secure: true, // port 465 ke liye true hota hai
+  port: 587, // Explicitly secure port use kar rahe hain
+  secure: false, // port 465 ke liye true hota hai
+  requireTLS: true,
   auth: {
     user: process.env.EMAIL_USER, // Tera Gmail ID (e.g., coderbhai@gmail.com)
     pass: process.env.EMAIL_PASS, // Tera 16-digit Gmail App Password
