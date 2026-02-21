@@ -1,10 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { Bug, LogOut, User, Shield, Code, TestTube } from "lucide-react";
 
-const Navigation = ({ onLeaderboardClick, onBugSummaryClick }) => {
+const Navigation = () => {
   const { user, logout } = useAuth();
   
-
+  const navigate  = useNavigate();
   const getRoleIcon = (role) => {
     switch (role) {
       case "admin":
@@ -17,7 +18,12 @@ const Navigation = ({ onLeaderboardClick, onBugSummaryClick }) => {
         return <User className="h-4 w-4" />;
     }
   };
-
+  const onBugSummaryClick = ()=>{
+     navigate("/bugsummary");
+  };
+  const onLeaderboardClick = ()=>{
+     navigate("/leaderboard");
+  };
   const getRoleBadgeColor = (role) => {
     switch (role) {
       case "admin":

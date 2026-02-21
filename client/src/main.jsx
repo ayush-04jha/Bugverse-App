@@ -4,7 +4,8 @@ import { AuthProvider } from './contexts/AuthContext.jsx';
 import App from './App.jsx';
 import './index.css';
 import { createBrowserRouter, createRoutesFromElements, RouterProvider, Route } from 'react-router-dom'
-
+import BugsSummary from './components/Common/BugsSummary.jsx';
+import LeaderBoardPage from './components/Common/LeaderBoardPage.jsx';
 import LoginForm from './components/Auth/LoginForm.jsx';
 import SignupForm from './components/Auth/SignupForm.jsx';
 import AdminDashboard from './components/Dashboard/AdminDashboard.jsx';
@@ -31,6 +32,9 @@ const router = createBrowserRouter(
         <Route path='developerdashboard' element={<DeveloperDashboard />} />
         <Route path='testerdashboard' element={<TesterDashboard />} />
         <Route path="bug/:id" element={<BugDetailPage/>} />
+        <Route path="bugsummary" element={<BugsSummary/>}/>
+        <Route path="leaderboard" element={<LeaderBoardPage/>}/>
+
       </Route>
 
     </>
@@ -44,7 +48,7 @@ const router = createBrowserRouter(
 createRoot(document.getElementById('root')).render(
   <StrictMode>
 
-    <AuthProvider>   {/* 👈 Yaha shift karo */}
+    <AuthProvider>   
       <RouterProvider router={router} />
     </AuthProvider>
 

@@ -15,7 +15,7 @@ function App() {
     <BugProvider>
       <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
         <Navigation />
-        <Outlet />   {/* 🔥 THIS WAS MISSING */}
+        <Outlet />  
       </div>
     </BugProvider>
   );

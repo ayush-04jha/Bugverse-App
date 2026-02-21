@@ -16,6 +16,7 @@ const BugDetailPage = () => {
   const [comment, setComment] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
+  
 
   if (!bug) {
     return (

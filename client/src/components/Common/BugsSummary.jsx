@@ -13,6 +13,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import instance from "../../axios";
+import { useNavigate } from "react-router-dom";
 
 // Simple Card components
 const Card = ({ children, className }) => (

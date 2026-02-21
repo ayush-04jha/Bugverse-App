@@ -1,7 +1,12 @@
 import React from "react";
 import DeveloperLeaderboard from "./developerLeaderBoard";
+import { useNavigate } from "react-router-dom";
 
-export default function LeaderboardPage({onBack}) {
+export default function LeaderboardPage() {
+  const navigate = useNavigate();
+  const onBack = ()=>{
+      navigate("/");
+  }
   return (
     <div className=" p-6">
       
@@ -11,3 +16,15 @@ export default function LeaderboardPage({onBack}) {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
