@@ -74,7 +74,7 @@ const Navigation = () => {
               </div>
             </div>
             {/* dropdown */}
-            <div className="absolute  md:right-0 mt-32 w-48 bg-white shadow-lg rounded-lg p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200 z-50">
+            <div className="absolute  md:right-0 mt-44 w-48 bg-white shadow-lg rounded-lg p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200 z-50">
              <button onClick={onBugSummaryClick}  className="w-full text-left p-2 hover:bg-gray-100 rounded">
                 Bugs Summary
               </button>
