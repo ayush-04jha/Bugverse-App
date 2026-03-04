@@ -179,7 +179,7 @@ const BugDetailPage = () => {
                 >
                   <option value="">Unassigned</option>
                   {developers.map(dev => (
-                    <option key={dev.id} value={dev.id}>{dev.name}</option>
+                    <option key={dev._id} value={dev._id}>{dev.name}</option>
                   ))}
                 </select>
               </div>

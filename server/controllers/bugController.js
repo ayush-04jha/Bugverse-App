@@ -271,7 +271,9 @@ export const updateBug = async (req, res) => {
     if (req.body.status === "resolved") {
       bugToUpdate.resolvedBy = req.user._id;
     }
-
+    if(req.body.assignedTo){
+      bugToUpdate.assignedTo = req.body.assignedTo;
+    }
     await bugToUpdate.save();
 
     res.status(201).json({ message: "status updated successfully!" });
