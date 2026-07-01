@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
   verificationExpires: {
   type: Date,
 },
+  googleId: { type: String },
 });
 userSchema.index({ verificationExpires: 1 }, { expireAfterSeconds: 0 });
 const User = mongoose.model("User", userSchema);

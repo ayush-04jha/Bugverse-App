@@ -44,3 +44,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-lock.yaml
+
+# ===================
+# Documentation
+# ===================
+BUGS_AND_IMPROVEMENTS.md
+GOOGLE_OAUTH_SETUP.md

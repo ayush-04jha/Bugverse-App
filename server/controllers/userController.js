@@ -20,3 +20,13 @@ export const getUsersByRole = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const getCurrentUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("_id name email role isVerified");
+    res.json(user);
+  } catch (err) {
+    console.error("Error fetching current user", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

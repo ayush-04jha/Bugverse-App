@@ -15,12 +15,16 @@ import RoleRedirect from './components/RoleRedirect/RoleRedirect.jsx';
 import AuthPage from './components/Auth/AuthPage.jsx';
 import BugDetailPage from './components/BugDetail/BugDetailPage.jsx';
 import VerifyPage from './components/Auth/VerifyPage.jsx';
+import OAuthCallback from './components/Auth/OAuthCallback.jsx';
+import RoleSelection from './components/Auth/RoleSelection.jsx';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path='login' element={<AuthPage/>} />
       <Route path='signup' element={<AuthPage/>} />
       <Route path='verify/:token' element={<VerifyPage/>} />
+      <Route path='auth/callback' element={<OAuthCallback/>} />
+      <Route path='role-selection' element={<RoleSelection/>} />
       <Route path="/"
         element={
           

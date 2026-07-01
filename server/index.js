@@ -1,5 +1,4 @@
-import dotenv from "dotenv";
-dotenv.config();
+import "dotenv/config";
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
@@ -11,9 +10,12 @@ import commentRoutes from "./routes/commentRoutes.js";
 import setupSocket from "./sockets/socket.js";
 import { v2 as cloudinary } from "cloudinary";
 import bugRoutes from "./routes/bugRoutes.js";
+import passport from "./config/passport.js";
+import session from "express-session";
 const app = express();
 const server = http.createServer(app);
 const isProduction = process.env.NODE_ENV === "production";
+
 
 const allowedOrigin = isProduction
   ? "https://bugverse-app-1.onrender.com"
@@ -41,7 +43,24 @@ app.use(
   })
 );
 
-app.use(express.json()); // json ko parse krke req.body me available krata hai
+// Session middleware for Passport
+app.use(
+  session({
+    secret: process.env.JWT_SECRET || "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    },
+  })
+);
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(express.json()); // json ko parse krke req.body me available krta hai
 
 //cloudinary configuration...
 cloudinary.config({

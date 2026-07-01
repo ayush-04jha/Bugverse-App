@@ -3,6 +3,50 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { sendVerificationEmail } from "../utils/sendEmail.js";
+
+export const googleAuthSuccess = async (req, res) => {
+  try {
+    // Check if this is a new user (profile in authInfo) or existing user
+    if (req.authInfo && req.authInfo.profile) {
+      // New user - store profile in session and redirect to role selection page
+      req.session.googleProfile = req.authInfo.profile;
+      
+      const frontendUrl = process.env.NODE_ENV === "production" 
+        ? "https://bugverse-app-1.onrender.com" 
+        : "http://localhost:5173";
+      
+      res.redirect(`${frontendUrl}/role-selection`);
+    } else {
+      // Existing user - generate JWT token and redirect
+      if (!req.user) {
+        return res.status(401).json({ msg: "Authentication failed" });
+      }
+      
+      const token = jwt.sign(
+        { id: req.user._id, role: req.user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      const frontendUrl = process.env.NODE_ENV === "production" 
+        ? "https://bugverse-app-1.onrender.com" 
+        : "http://localhost:5173";
+      
+      res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
+    }
+  } catch (error) {
+    console.error("Google auth error:", error);
+    res.status(500).json({ msg: "Authentication failed" });
+  }
+};
+
+export const googleAuthFailed = (req, res) => {
+  const frontendUrl = process.env.NODE_ENV === "production" 
+    ? "https://bugverse-app-1.onrender.com" 
+    : "http://localhost:5173";
+  
+  res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
+};
 export const signUp = async (req, res) => {
   console.log(req.body);
 
@@ -120,6 +164,54 @@ export const resendVerification = async (req, res) => {
 
   } catch (err) {
     console.error(err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+export const completeGoogleSignup = async (req, res) => {
+  try {
+    const { role } = req.body;
+    
+    // Get Google profile from session
+    const googleProfile = req.session.googleProfile;
+    
+    if (!googleProfile) {
+      return res.status(400).json({ msg: "Google profile not found in session" });
+    }
+
+    // Check if user already exists (double check)
+    const existingUser = await User.findOne({ email: googleProfile.emails[0].value });
+    if (existingUser) {
+      return res.status(400).json({ msg: "User already exists" });
+    }
+
+    // Create new user with selected role
+    const bcrypt = await import("bcryptjs");
+    const randomPassword = Math.random().toString(36).slice(-8);
+    const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+    const user = await User.create({
+      name: googleProfile.displayName,
+      email: googleProfile.emails[0].value,
+      password: hashedPassword,
+      role: role || "tester",
+      isVerified: true,
+      googleId: googleProfile.id,
+    });
+
+    // Clear Google profile from session
+    delete req.session.googleProfile;
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.status(201).json({ user, token });
+  } catch (error) {
+    console.error("Complete Google signup error:", error);
     res.status(500).json({ msg: "Server error" });
   }
 };
