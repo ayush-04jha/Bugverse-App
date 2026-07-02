@@ -5,7 +5,7 @@ import User from "../models/userModel.js";
 // Only configure Google OAuth if credentials are available
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   const callbackURL = process.env.NODE_ENV === "production"
-    ? "https://bugverse-app-1.onrender.com/api/auth/google/callback"
+    ? "https://bugverse-app.onrender.com/api/auth/google/callback"
     : "http://localhost:5000/api/auth/google/callback";
 
   passport.use(

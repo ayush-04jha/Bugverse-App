@@ -12,6 +12,7 @@ import { v2 as cloudinary } from "cloudinary";
 import bugRoutes from "./routes/bugRoutes.js";
 import passport from "./config/passport.js";
 import session from "express-session";
+import MongoStore from "connect-mongo";
 const app = express();
 const server = http.createServer(app);
 const isProduction = process.env.NODE_ENV === "production";
@@ -19,7 +20,7 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const allowedOrigin = isProduction
   ? "https://bugverse-app-1.onrender.com"
-  : "http://localhost:5173";
+  : "http://localhost:5174";
 
 const io = new Server(server, {
   cors: {
@@ -29,11 +30,6 @@ const io = new Server(server, {
   },
 });
 setupSocket(io);
-// mongoose connection
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("mongoose connected"))
-  .catch((err) => console.log(err));
 
 // middleware use
 app.use(
@@ -43,15 +39,28 @@ app.use(
   })
 );
 
-// Session middleware for Passport
+// mongoose connection
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("mongoose connected"))
+  .catch((err) => console.log(err));
+
+// Session middleware for Passport with MongoDB store
 app.use(
   session({
     secret: process.env.JWT_SECRET || "your-secret-key",
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      collectionName: "sessions",
+      ttl: 60 * 60 * 24 * 7, // 7 days
+      touchAfter: 24 * 3600, // Update session only once every 24 hours
+    }),
     cookie: {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     },
   })
 );

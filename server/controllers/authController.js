@@ -11,9 +11,9 @@ export const googleAuthSuccess = async (req, res) => {
       // New user - store profile in session and redirect to role selection page
       req.session.googleProfile = req.authInfo.profile;
       
-      const frontendUrl = process.env.NODE_ENV === "production" 
-        ? "https://bugverse-app-1.onrender.com" 
-        : "http://localhost:5173";
+      const frontendUrl = process.env.NODE_ENV === "production"
+        ? "https://bugverse-app-1.onrender.com"
+        : "http://localhost:5174";
       
       res.redirect(`${frontendUrl}/role-selection`);
     } else {
@@ -28,9 +28,9 @@ export const googleAuthSuccess = async (req, res) => {
         { expiresIn: "7d" }
       );
 
-      const frontendUrl = process.env.NODE_ENV === "production" 
-        ? "https://bugverse-app-1.onrender.com" 
-        : "http://localhost:5173";
+      const frontendUrl = process.env.NODE_ENV === "production"
+        ? "https://bugverse-app-1.onrender.com"
+        : "http://localhost:5174";
       
       res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
     }
@@ -41,10 +41,10 @@ export const googleAuthSuccess = async (req, res) => {
 };
 
 export const googleAuthFailed = (req, res) => {
-  const frontendUrl = process.env.NODE_ENV === "production" 
-    ? "https://bugverse-app-1.onrender.com" 
-    : "http://localhost:5173";
-  
+  const frontendUrl = process.env.NODE_ENV === "production"
+    ? "https://bugverse-app-1.onrender.com"
+    : "http://localhost:5174";
+
   res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
 };
 export const signUp = async (req, res) => {

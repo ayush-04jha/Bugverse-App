@@ -1,7 +1,8 @@
 ﻿
 # 🐞 BugVerse - Real-Time Bug Reporting System
 
-🌐 **Live Demo:** https://bugverse-app-1.onrender.com
+🌐 **Live Demo:** https://bugverse-app-1.onrender.com (Frontend)
+🔧 **Backend API:** https://bugverse-app.onrender.com
 
 BugVerse is a real-time bug reporting and tracking system for efficient team collaboration. Built using React, Express, MongoDB, and Socket.IO.
 
