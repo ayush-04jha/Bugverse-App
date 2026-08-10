@@ -23,10 +23,10 @@ export const BugProvider = ({ children }) => {
  useEffect(() => {
     if (!loggedInUser?._id) return;
      const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
-  
+     const token = localStorage.getItem("token");
 
     socket = io(SOCKET_URL, {
-      query: { userId: loggedInUser._id },
+      auth: { token }, // Send JWT token for authentication
       withCredentials: true, // cookies etc ke liye
     });
 
