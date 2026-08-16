@@ -273,6 +273,7 @@ MONGO_URI=mongodb://localhost:27017/bugverse
 
 # Authentication
 JWT_SECRET=your_super_secret_jwt_key_min_32_chars
+SESSION_SECRET=your_super_secret_session_key_min_32_chars
 
 # Cloudinary (for video uploads)
 CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
@@ -343,6 +344,7 @@ npm run dev
 | `NODE_ENV` | Environment | No | development |
 | `MONGO_URI` | MongoDB connection string | Yes | - |
 | `JWT_SECRET` | JWT signing secret | Yes | - |
+| `SESSION_SECRET` | Session secret for Passport OAuth | Yes | - |
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name | Yes* | - |
 | `CLOUDINARY_API_KEY` | Cloudinary API key | Yes* | - |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret | Yes* | - |

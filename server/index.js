@@ -48,7 +48,13 @@ mongoose
 // Session middleware for Passport with MongoDB store
 app.use(
   session({
-    secret: process.env.JWT_SECRET || "your-secret-key",
+    secret: process.env.SESSION_SECRET || (() => {
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('SESSION_SECRET environment variable must be set in production');
+      }
+      console.warn('⚠️  WARNING: Using default session secret. Set SESSION_SECRET environment variable for production.');
+      return 'dev-secret-key-change-in-production';
+    })(),
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
@@ -59,8 +65,9 @@ app.use(
     }),
     cookie: {
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      httpOnly: true,
     },
   })
 );
