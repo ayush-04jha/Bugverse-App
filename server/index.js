@@ -1,4 +1,5 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+import path from "path";
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
@@ -13,6 +14,10 @@ import bugRoutes from "./routes/bugRoutes.js";
 import passport from "./config/passport.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
+import { connectDatabase, getConnectionStatus } from "./config/database.js";
+
+// Load environment variables from server directory
+dotenv.config({ path: path.resolve(process.cwd(), 'server', '.env') });
 const app = express();
 const server = http.createServer(app);
 const isProduction = process.env.NODE_ENV === "production";
@@ -39,38 +44,63 @@ app.use(
   })
 );
 
-// mongoose connection
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("mongoose connected"))
-  .catch((err) => console.log(err));
+// Initialize database connection with error handling
+connectDatabase().catch((error) => {
+  console.error("Failed to initialize database connection:", error);
+  if (process.env.NODE_ENV === "production") {
+    process.exit(1);
+  }
+});
 
 // Session middleware for Passport with MongoDB store
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || (() => {
-      if (process.env.NODE_ENV === 'production') {
-        throw new Error('SESSION_SECRET environment variable must be set in production');
-      }
-      console.warn('⚠️  WARNING: Using default session secret. Set SESSION_SECRET environment variable for production.');
-      return 'dev-secret-key-change-in-production';
-    })(),
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGO_URI,
-      collectionName: "sessions",
-      ttl: 60 * 60 * 24 * 7, // 7 days
-      touchAfter: 24 * 3600, // Update session only once every 24 hours
-    }),
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-      httpOnly: true,
-    },
-  })
-);
+if (process.env.MONGO_URI) {
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET || (() => {
+        if (process.env.NODE_ENV === 'production') {
+          throw new Error('SESSION_SECRET environment variable must be set in production');
+        }
+        console.warn('⚠️  WARNING: Using default session secret. Set SESSION_SECRET environment variable for production.');
+        return 'dev-secret-key-change-in-production';
+      })(),
+      resave: false,
+      saveUninitialized: false,
+      store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI,
+        collectionName: "sessions",
+        ttl: 60 * 60 * 24 * 7, // 7 days
+        touchAfter: 24 * 3600, // Update session only once every 24 hours
+      }),
+      cookie: {
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+        httpOnly: true,
+      },
+    })
+  );
+} else {
+  console.warn('⚠️  WARNING: MongoDB URI not found. Session storage disabled. Google OAuth will not work properly.');
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET || (() => {
+        if (process.env.NODE_ENV === 'production') {
+          throw new Error('SESSION_SECRET environment variable must be set in production');
+        }
+        console.warn('⚠️  WARNING: Using default session secret. Set SESSION_SECRET environment variable for production.');
+        return 'dev-secret-key-change-in-production';
+      })(),
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+        httpOnly: true,
+      },
+    })
+  );
+}
 
 // Initialize Passport
 app.use(passport.initialize());
@@ -91,7 +121,17 @@ app.use((req, res, next) => {
   next();
 });
 app.get("/health", (req, res) => {
-  res.status(200).json({ status: "OK" });
+  const dbStatus = getConnectionStatus();
+  const healthStatus = {
+    status: dbStatus.isConnected ? "healthy" : "unhealthy",
+    timestamp: new Date().toISOString(),
+    database: dbStatus,
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || "development"
+  };
+  
+  const statusCode = dbStatus.isConnected ? 200 : 503;
+  res.status(statusCode).json(healthStatus);
 });
 app.use("/api/bugs", bugRoutes);
 app.use("/api/auth", authRoutes);
