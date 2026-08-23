@@ -1,4 +1,4 @@
-# BugVerse - Real-Time Bug Reporting System
+##  BugVerse - Real-Time Bug Reporting System
 
 <div align="center">
 
