@@ -13,7 +13,7 @@ export const googleAuthSuccess = async (req, res) => {
       
       const frontendUrl = process.env.NODE_ENV === "production"
         ? "https://bugverse-app-1.onrender.com"
-        : "http://localhost:5174";
+        : "http://localhost:5173";
       
       res.redirect(`${frontendUrl}/role-selection`);
     } else {
@@ -30,7 +30,7 @@ export const googleAuthSuccess = async (req, res) => {
 
       const frontendUrl = process.env.NODE_ENV === "production"
         ? "https://bugverse-app-1.onrender.com"
-        : "http://localhost:5174";
+        : "http://localhost:5173";
       
       res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
     }
@@ -43,7 +43,7 @@ export const googleAuthSuccess = async (req, res) => {
 export const googleAuthFailed = (req, res) => {
   const frontendUrl = process.env.NODE_ENV === "production"
     ? "https://bugverse-app-1.onrender.com"
-    : "http://localhost:5174";
+    : "http://localhost:5173";
 
   res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
 };

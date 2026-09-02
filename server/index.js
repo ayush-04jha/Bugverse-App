@@ -1,23 +1,38 @@
 import dotenv from "dotenv";
 import path from "path";
+import { fileURLToPath } from "url";
+
+// Get the directory where this file is located
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables from server directory BEFORE any other imports
+// Try to load from the server directory (where this file is located)
+const envPath = path.resolve(__dirname, '.env');
+const result = dotenv.config({ path: envPath });
+if (result.error) {
+  console.error('Error loading .env file:', result.error);
+}
+
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import mongoose from "mongoose";
-import authRoutes from "./routes/authRoutes.js";
+import authRoutes, { configureGoogleAuthRoutes } from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRouters.js";
 import commentRoutes from "./routes/commentRoutes.js";
 import setupSocket from "./sockets/socket.js";
 import { v2 as cloudinary } from "cloudinary";
 import bugRoutes from "./routes/bugRoutes.js";
-import passport from "./config/passport.js";
+import passport, { configureGoogleOAuth } from "./config/passport.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import { connectDatabase, getConnectionStatus } from "./config/database.js";
 
-// Load environment variables from server directory
-dotenv.config({ path: path.resolve(process.cwd(), 'server', '.env') });
+// Configure Google OAuth after environment variables are loaded
+configureGoogleOAuth();
+configureGoogleAuthRoutes();
 const app = express();
 const server = http.createServer(app);
 const isProduction = process.env.NODE_ENV === "production";
@@ -25,7 +40,7 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const allowedOrigin = isProduction
   ? "https://bugverse-app-1.onrender.com"
-  : "http://localhost:5174";
+  : "http://localhost:5173";
 
 const io = new Server(server, {
   cors: {

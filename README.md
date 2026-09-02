@@ -235,7 +235,7 @@ sequenceDiagram
 ### DevOps & Deployment
 - **Platform**: Render (Production)
 - **Version Control**: Git
-- **Frontend Port**: 5174 (dev), 443 (prod)
+- **Frontend Port**: 5173 (dev), 443 (prod)
 - **Backend Port**: 5000 (dev), 80/443 (prod)
 
 ---
