@@ -1,9 +1,9 @@
-# 🐞 BugVerse - Real-Time Bug Reporting System
+##  BugVerse - Real-Time Bug Reporting System
 
 <div align="center">
 
-🌐 **Live Demo:** [https://bugverse-app-1.onrender.com](https://bugverse-app-1.onrender.com) (Frontend)  
-🔧 **Backend API:** [https://bugverse-app.onrender.com](https://bugverse-app.onrender.com)
+ **Live Demo:** [https://bugverse-app-1.onrender.com](https://bugverse-app-1.onrender.com) (Frontend)  
+ **Backend API:** [https://bugverse-app.onrender.com](https://bugverse-app.onrender.com)
 
 A professional, real-time bug reporting and tracking system for efficient team collaboration. Built with modern web technologies to streamline development workflows.
 
