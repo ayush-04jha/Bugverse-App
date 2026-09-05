@@ -34,10 +34,24 @@ export const createBug = async (req, res) => {
       });
     }
 
+    // Parse environment data if present
+    let environmentData = null;
+    if (req.body.environment) {
+      try {
+        environmentData = JSON.parse(req.body.environment);
+      } catch (e) {
+        console.error("Error parsing environment data:", e);
+      }
+    }
+
+    // Create bug data object without the environment field
+    const { environment, ...bugData } = req.body;
+
     const bug = new Bug({
-      ...req.body,
+      ...bugData,
       createdBy: req.user._id,
       videoUrl,
+      environment: environmentData,
     });
     await bug.save();
 

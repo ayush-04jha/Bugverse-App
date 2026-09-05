@@ -32,6 +32,10 @@ const bugSchema = new mongoose.Schema(
         createdAt: { type: Date, default: Date.now },
       },
     ],
+    environment: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
   },
   { timestamps: true }
 );

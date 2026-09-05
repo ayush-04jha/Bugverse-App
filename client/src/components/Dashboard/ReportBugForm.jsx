@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useBugs } from "../../contexts/BugContext";
-import { X, Bug, AlertTriangle } from "lucide-react";
+import { X, Bug, AlertTriangle, Monitor } from "lucide-react";
 import instance from "../../axios";
 import axios from "axios";
+import { captureEnvironment, formatEnvironmentForDisplay } from "../../utils/environmentCapture";
 const ReportBugForm = ({ onClose }) => {
   const { user } = useAuth();
   const { createBug, users } = useBugs();
@@ -18,8 +19,22 @@ const ReportBugForm = ({ onClose }) => {
     tags: "",
   });
   const [loading, setLoading] = useState(false);
+  const [environmentData, setEnvironmentData] = useState(null);
+  const [showEnvironment, setShowEnvironment] = useState(false);
 
   const developers = users.filter((u) => u.role === "developer");
+
+  // Capture environment data when component mounts
+  React.useEffect(() => {
+    const env = captureEnvironment();
+    setEnvironmentData(env);
+  }, []);
+
+  const handleCaptureEnvironment = () => {
+    const env = captureEnvironment();
+    setEnvironmentData(env);
+    setShowEnvironment(true);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,9 +47,14 @@ const ReportBugForm = ({ onClose }) => {
     bugData.append("assignedTo", formData.assignedTo);
     bugData.append(
       "tags",
-      formData.tags ? JSON.stringify( formData.tags.split(",").map((tag) => tag.trim())) : JSON.stringify([]) 
+      formData.tags ? JSON.stringify( formData.tags.split(",").map((tag) => tag.trim())) : JSON.stringify([])
     );
     bugData.append("createdBy", user._id);
+
+    // Add environment data
+    if (environmentData) {
+      bugData.append("environment", JSON.stringify(environmentData));
+    }
 
     if (videoFile) {
       bugData.append("video", videoFile);
@@ -226,9 +246,9 @@ const ReportBugForm = ({ onClose }) => {
             </p>
           </div>
 
-          <div className=" p-2 space-y-3 my-2">
+          <div className="space-y-3 my-2">
             <h2 className="block text-sm font-medium text-gray-700">
-              Upload a Bug
+              Upload a Bug Video
             </h2>
             <input type="file" accept="video/*" onChange={handleFileChange} />
 
@@ -239,6 +259,39 @@ const ReportBugForm = ({ onClose }) => {
               </div>
             )}
           </div>
+
+          {/* Environment Capture Section */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-start space-x-3">
+                <Monitor className="h-5 w-5 text-blue-600 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-medium text-blue-800">
+                    Environment Information
+                  </h4>
+                  <p className="text-xs text-blue-600 mt-1">
+                    {environmentData ? 'Environment captured automatically' : 'Click to capture current environment'}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleCaptureEnvironment}
+                className="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+              >
+                {environmentData ? 'Refresh' : 'Capture'}
+              </button>
+            </div>
+
+            {showEnvironment && environmentData && (
+              <div className="mt-3 p-3 bg-white rounded border border-blue-200">
+                <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono">
+                  {formatEnvironmentForDisplay(environmentData)}
+                </pre>
+              </div>
+            )}
+          </div>
+
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
             <div className="flex items-start space-x-3">
               <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
