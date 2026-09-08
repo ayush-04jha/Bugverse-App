@@ -1,6 +1,6 @@
 import React from "react";
 import { useBugs } from "../../contexts/BugContext";
-import { Calendar, User, Tag, MessageCircle } from "lucide-react";
+import { Calendar, User, Tag, MessageCircle, Monitor } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 const BugCard = ({ bug, onClick, showActions, children }) => {
   const { getUserById } = useBugs();
@@ -132,6 +132,13 @@ const BugCard = ({ bug, onClick, showActions, children }) => {
           >
             Bug video available
           </a>
+        </div>
+      )}
+
+      {bug.environment && (
+        <div className="mb-4 flex items-center space-x-2 text-xs text-blue-600">
+          <Monitor className="h-3 w-3" />
+          <span>Environment info available</span>
         </div>
       )}
 

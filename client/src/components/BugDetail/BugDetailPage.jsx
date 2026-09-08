@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBugs } from '../../contexts/BugContext';
-import { ArrowLeft, Calendar, User, Tag, MessageCircle, Send, Edit3, Save, X } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Tag, MessageCircle, Send, Edit3, Save, X, Monitor } from 'lucide-react';
 import StatusBadge from '../Common/StatusBadge';
 import PriorityBadge from '../Common/PriorityBadge';
 import instance from '../../axios';
 import socket from '../../socket';
 import { useParams, useNavigate } from "react-router-dom";
+import { formatEnvironmentForDisplay } from '../../utils/environmentCapture';
 const BugDetailPage = () => {
   const { id } = useParams(); 
   const { user } = useAuth();
@@ -272,6 +273,23 @@ const BugDetailPage = () => {
               )}
             </div>
           ) : null}
+
+          {/* Environment Information Section */}
+          {bug.environment && (
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-gray-500 mb-2">Environment Information</h3>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <Monitor className="h-5 w-5 text-blue-600 mt-0.5" />
+                  <div className="flex-1">
+                    <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono">
+                      {formatEnvironmentForDisplay(bug.environment)}
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
              {bug.videoUrl && (
   <div className="mb-4 ml-6">
