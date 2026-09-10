@@ -39,12 +39,21 @@ const isProduction = process.env.NODE_ENV === "production";
 
 
 const allowedOrigin = isProduction
-  ? "https://bugverse-app-1.onrender.com"
-  : "http://localhost:5173";
+  ? ["https://bugverse-app-1.onrender.com", "chrome-extension://*"]
+  : ["http://localhost:5173", "chrome-extension://*"];
 
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigin,
+    origin: function(origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigin.includes(origin) || origin.startsWith('chrome-extension://')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ["GET", "POST", "PATCH"],
     credentials: true,
   },
@@ -54,7 +63,16 @@ setupSocket(io);
 // middleware use
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: function(origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigin.includes(origin) || origin.startsWith('chrome-extension://')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );

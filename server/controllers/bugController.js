@@ -310,3 +310,69 @@ export const getResolvedBug = async (req, res) => {
       .json({ message: "Error fetching resolved bugs", error: err.message });
   }
 };
+
+export const createExtensionBug = async (req, res) => {
+  try {
+    const { title, description, severity, tags, url, technical_context, screenshot } = req.body;
+    
+    if (!title || !description) {
+      return res.status(400).json({ message: "Title and description are required" });
+    }
+
+    // Handle screenshot upload to Cloudinary if present
+    let screenshotUrl = null;
+    if (screenshot) {
+      try {
+        // Convert base64 to buffer
+        const base64Data = screenshot.replace(/^data:image\/\w+;base64,/, "");
+        const buffer = Buffer.from(base64Data, "base64");
+        
+        screenshotUrl = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { resource_type: "image", folder: "bugverse_screenshots" },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result.secure_url);
+            }
+          );
+          uploadStream.end(buffer);
+        });
+      } catch (error) {
+        console.error("Error uploading screenshot:", error);
+        // Continue without screenshot if upload fails
+      }
+    }
+
+    const bug = new Bug({
+      title,
+      description,
+      severity: severity || "medium",
+      tags: tags || [],
+      status: "open",
+      createdBy: req.user._id,
+      technical_context: technical_context || null,
+      extension_data: {
+        url: url || null,
+        screenshot: screenshotUrl || null,
+        user_agent: req.headers["user-agent"] || null
+      }
+    });
+
+    await bug.save();
+
+    const populatedBug = await Bug.findById(bug._id)
+      .populate("createdBy", "_id name role")
+      .populate("assignedTo", "_id name role");
+
+    // Send notification via socket
+    const testerSocketId = getUserSocketId(populatedBug.createdBy._id.toString());
+    if (testerSocketId) {
+      req.io.emit("bug:created", populatedBug);
+    }
+
+    res.status(201).json(populatedBug);
+  } catch (err) {
+    console.error("Error creating extension bug:", err);
+    res.status(500).json({ message: err.message });
+  }
+};

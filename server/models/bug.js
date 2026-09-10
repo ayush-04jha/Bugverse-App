@@ -36,6 +36,15 @@ const bugSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       default: null,
     },
+    technical_context: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+    extension_data: {
+      url: String,
+      screenshot: String,
+      user_agent: String,
+    },
   },
   { timestamps: true }
 );

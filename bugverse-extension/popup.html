@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BugVerse Extension</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <span class="icon">🐛</span>
+        <h1>BugVerse</h1>
+      </div>
+      <div class="auth-status" id="authStatus">
+        <span class="status-indicator"></span>
+        <span class="status-text">Loading...</span>
+      </div>
+    </div>
+
+    <!-- Login Section -->
+    <div class="section login-section" id="loginSection">
+      <div class="login-form">
+        <h2>Login to BugVerse</h2>
+        <p class="subtitle">Please login to report bugs</p>
+        
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="your@email.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+        
+        <button id="loginBtn" class="btn btn-primary">Login</button>
+        <p class="login-hint">
+          Don't have an account? 
+          <a href="http://localhost:3000/register" target="_blank">Register here</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Bug Report Section -->
+    <div class="section bug-report-section hidden" id="bugReportSection">
+      <div class="current-url">
+        <span class="url-label">Current URL:</span>
+        <span class="url-value" id="currentUrl">Loading...</span>
+      </div>
+
+      <form id="bugForm">
+        <div class="form-group">
+          <label for="title">Bug Title *</label>
+          <input type="text" id="title" placeholder="Brief description of the bug" required>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <textarea id="description" rows="4" placeholder="Detailed description, steps to reproduce, expected vs actual behavior..." required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="severity">Severity *</label>
+            <select id="severity" required>
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="tags">Tags</label>
+            <input type="text" id="tags" placeholder="ui, mobile, performance">
+          </div>
+        </div>
+
+        <!-- Technical Context Section -->
+        <div class="technical-context">
+          <div class="context-header">
+            <h3>Technical Context</h3>
+            <button type="button" id="refreshContext" class="btn btn-small">Refresh</button>
+          </div>
+          
+          <div class="context-summary" id="contextSummary">
+            <div class="summary-item">
+              <span class="label">Errors:</span>
+              <span class="value" id="errorCount">0</span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Warnings:</span>
+              <span class="value" id="warningCount">0</span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Requests:</span>
+              <span class="value" id="requestCount">0</span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Failed:</span>
+              <span class="value error" id="failedCount">0</span>
+            </div>
+          </div>
+
+          <div class="context-details hidden" id="contextDetails">
+            <div class="context-section">
+              <h4>Console Errors</h4>
+              <div class="context-list" id="consoleErrors"></div>
+            </div>
+            
+            <div class="context-section">
+              <h4>Network Requests</h4>
+              <div class="context-list" id="networkRequests"></div>
+            </div>
+          </div>
+
+          <button type="button" id="toggleDetails" class="btn btn-small btn-text">Show Details</button>
+        </div>
+
+        <!-- Screenshot Section -->
+        <div class="screenshot-section">
+          <div class="screenshot-header">
+            <h3>Screenshot</h3>
+            <button type="button" id="captureScreenshot" class="btn btn-small">Capture</button>
+          </div>
+          <div class="screenshot-preview" id="screenshotPreview">
+            <p class="placeholder">No screenshot captured</p>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" id="logoutBtn" class="btn btn-secondary">Logout</button>
+          <button type="submit" id="submitBtn" class="btn btn-primary">Submit Bug Report</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+      <div class="spinner"></div>
+      <p id="loadingText">Loading...</p>
+    </div>
+
+    <!-- Success Message -->
+    <div class="success-message hidden" id="successMessage">
+      <div class="success-icon">✓</div>
+      <h2>Bug Report Submitted!</h2>
+      <p>Your bug has been successfully reported to BugVerse.</p>
+      <button id="closeSuccess" class="btn btn-primary">Close</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
